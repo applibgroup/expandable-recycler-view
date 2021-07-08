@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:ohos="http://schemas.huawei.com/res/ohos"
+    ohos:id="$+id:root_multitype"
+    ohos:height="match_parent"
+    ohos:width="match_parent">
+
+    <DirectionalLayout
+        ohos:height="match_parent"
+        ohos:width="match_parent"
+        ohos:orientation="vertical">
+
+        <DependentLayout
+            ohos:height="match_parent"
+            ohos:width="match_parent">
+
+            <com.thoughtbot.expandablerecyclerview.ExpandableListContainer
+                ohos:id="$+id:lcGroupItems_multitype"
+                ohos:height="match_content"
+                ohos:width="match_parent"
+                ohos:start_margin="$float:margin_10vp"/>
+
+        </DependentLayout>
+    </DirectionalLayout>
+</ScrollView>

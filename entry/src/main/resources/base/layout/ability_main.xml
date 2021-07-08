@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DirectionalLayout
+    xmlns:ohos="http://schemas.huawei.com/res/ohos"
+    ohos:height="match_parent"
+    ohos:width="match_parent"
+    ohos:alignment="vertical_center"
+    ohos:orientation="vertical">
+
+    <Button
+        ohos:id="$+id:expand_button"
+        ohos:text_size="$float:text_15fp"
+        ohos:background_element="$ohos:color:id_color_activated_end_dark"
+        ohos:top_padding="$float:padding_5vp"
+        ohos:bottom_padding="$float:padding_5vp"
+        ohos:width="match_parent"
+        ohos:height="match_content"
+        ohos:text="$string:expand" />
+
+    <Button
+        ohos:id="$+id:multicheck_button"
+        ohos:width="match_parent"
+        ohos:height="match_content"
+        ohos:top_margin="$float:margin_10vp"
+        ohos:text_size="$float:text_15fp"
+        ohos:top_padding="$float:padding_5vp"
+        ohos:bottom_padding="$float:padding_5vp"
+        ohos:background_element="$ohos:color:id_color_activated_end_dark"
+        ohos:text="$string:multicheck" />
+
+    <Button
+        ohos:id="$+id:singlecheck_button"
+        ohos:width="match_parent"
+        ohos:height="match_content"
+        ohos:top_margin="$float:margin_10vp"
+        ohos:text_size="$float:text_15fp"
+        ohos:top_padding="$float:padding_5vp"
+        ohos:bottom_padding="$float:padding_5vp"
+        ohos:background_element="$ohos:color:id_color_activated_end_dark"
+        ohos:text="$string:singlecheck" />
+
+    <Button
+        ohos:id="$+id:multitype_button"
+        ohos:width="match_parent"
+        ohos:height="match_content"
+        ohos:top_margin="$float:margin_10vp"
+        ohos:text_size="$float:text_15fp"
+        ohos:top_padding="$float:padding_5vp"
+        ohos:bottom_padding="$float:padding_5vp"
+        ohos:background_element="$ohos:color:id_color_activated_end_dark"
+        ohos:text="$string:multitype" />
+
+
+    <Button
+        ohos:id="$+id:multitypecheck_button"
+        ohos:width="match_parent"
+        ohos:height="match_content"
+        ohos:top_margin="$float:margin_10vp"
+        ohos:text_size="$float:text_15fp"
+        ohos:top_padding="$float:padding_5vp"
+        ohos:bottom_padding="$float:padding_5vp"
+        ohos:background_element="$ohos:color:id_color_activated_end_dark"
+        ohos:text="$string:multitypecheck" />
+
+</DirectionalLayout>
