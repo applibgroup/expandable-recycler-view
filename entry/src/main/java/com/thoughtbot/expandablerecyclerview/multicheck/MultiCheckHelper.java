@@ -131,14 +131,14 @@ public class MultiCheckHelper {
                     holder.makeInvisibleImage(ResourceTable.Id_ArrowIcon);
                     holder.setText(ResourceTable.Id_tvGroupTitle, text.getChildItem(), Color.BLACK,
                             ResUtil.getIntDimen(context, ResourceTable.Float_child_text_size));
-                    boolean flag = false;
+                    boolean isChecked = false;
                     for (int i = 0; i < mSelectedChild.size(); i++) {
                         if (mSelectedChild.get(i).isEquals(text)) {
-                            flag = true;
+                            isChecked = true;
                             break;
                         }
                     }
-                    if (flag) {
+                    if (isChecked) {
                         holder.setChecked(ResourceTable.Id_checkbtn);
                     } else {
                         holder.setUnChecked(ResourceTable.Id_checkbtn);
@@ -162,7 +162,6 @@ public class MultiCheckHelper {
                     mTempGroupNameItem.add(clickedItem);
                 }
                 expandableListAdapter.setData(mGroupNameItem);
-
             } else {
                 int index = -1;
                 for (int i = 0; i < mSelectedChild.size(); i++) {
@@ -188,15 +187,15 @@ public class MultiCheckHelper {
 
         //To automatically check boston child item under Parent Rock
         bostonbtn.setClickedListener(component -> {
-            boolean flag = true;
+            boolean isChecked = true;
             ParentChild value = new ParentChild(valueRock, valueBoston);
             for (int i = 0; i < mSelectedChild.size(); i++) {
                 if (mSelectedChild.get(i).isEquals(value)) {
-                    flag = false;
+                    isChecked = false;
                     break;
                 }
             }
-            if (flag) {
+            if (isChecked) {
                 mSelectedChild.add(new ParentChild(valueRock, valueBoston));
                 expandableListAdapter.setData(mGroupNameItem);
             } else {
