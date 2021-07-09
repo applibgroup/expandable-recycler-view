@@ -1,3 +1,6 @@
+[![Build](https://github.com/applibgroup/expandable-recycler-view/actions/workflows/main.yml/badge.svg)](https://github.com/applibgroup/expandable-recycler-view/actions/workflows/main.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=applibgroup_expandable-recycler-view&metric=alert_status)](https://sonarcloud.io/dashboard?id=applibgroup_expandable-recycler-view)
+
 # ExpandableRecyclerView
 This is an HarmonyOS library with Custom BaseItemProvider for expanding and collapsing groups.
 
