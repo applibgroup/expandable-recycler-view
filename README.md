@@ -212,23 +212,23 @@ if (mSelectedChild.containsKey(text.getParentItem()) && mSelectedChild.get(text.
 }
 ```
 
-### Expand Ability
+### Expand List
 This will have a list of Group Items (i.e. Genre) and on clicking on it, the group will expand and their corresponding child items (i.e Artist) will be visible.
 we also have `TOGGLE CLASSIC GROUP` button that can automatically expand and collapse the Classic group item.
 
 ![expand](https://user-images.githubusercontent.com/77639268/124965177-74149700-e03f-11eb-8cb2-496a2076aba5.gif)
 
-### MultiType Ability
+### MultiType List
 In this, we will have our favourite child items. While rendering the view we can add the star image in front of each of those items that are present in `mFavouriteItem`.
 
 ![multitype](https://user-images.githubusercontent.com/77639268/124965356-aa521680-e03f-11eb-9258-701c99451682.gif)
 
-### SingleCheck Ability
+### SingleCheck List
 This will allow the us to select one Artist among the other artists of a particulat Genre. It also provides us with the `CLEAR SELECTIONS` button that will clear all our previous choices. 
 
 ![singleCheck](https://user-images.githubusercontent.com/77639268/124965380-afaf6100-e03f-11eb-8fbe-613fa32c181d.gif)
 
-### MultiCheck Ability
+### MultiCheck List
 This will allow the us to select multiple Artist of a particulat Genre. It also provides us with the `PROGRAMMATICALLY CHECK BOSTON` button that will automatically check the boston Artist of Rock Genre.
 
 ![multicheck](https://user-images.githubusercontent.com/77639268/124965392-b5a54200-e03f-11eb-8676-7bd730c11796.gif)
