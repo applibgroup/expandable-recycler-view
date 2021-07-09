@@ -196,7 +196,7 @@ public class MultiCheckHelper {
                     break;
                 }
             }
-            if (! isPresent) {
+            if (!isPresent) {
                 mSelectedChild.add(new ParentChild(valueRock, valueBoston));
                 expandableListAdapter.setData(mGroupNameItem);
             } else {
