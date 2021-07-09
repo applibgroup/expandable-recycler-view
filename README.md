@@ -1,429 +1,237 @@
-![logo](https://images.thoughtbot.com/blog-vellum-image-uploads/lpMtQDMlRindAIJOHlGl_expandable-recycler-view-logo.png)
+# ExpandableRecyclerView
+This is an HarmonyOS library with Custom BaseItemProvider for expanding and collapsing groups.
 
-# Expandable RecyclerView [![CircleCI](https://circleci.com/gh/thoughtbot/expandable-recycler-view/tree/master.svg?style=svg)](https://circleci.com/gh/thoughtbot/expandable-recycler-view/tree/master)
-Custom RecyclerViewAdapters for expanding and collapsing groups with support for multiple view types
+# Source
+This library is inspired by version 1.5 of [ExpandableRecyclerView](https://github.com/thoughtbot/expandable-recycler-view) library.
 
-<img src="https://cloud.githubusercontent.com/assets/5386934/17074123/b9d1efca-502c-11e6-9c9f-fb6180ee337f.gif" width=300 />
+# Features
+This library allows us to add child items within the group items in a List View. It also demonstrates how we can add our favourite, single checker and multichecker child Items.
 
-## Download
-ExpandableRecyclerView:
-```groovy
-compile 'com.thoughtbot:expandablerecyclerview:1.4'
-```
-
-ExpandableCheckRecyclerView:
-```groovy
-compile 'com.thoughtbot:expandablecheckrecyclerview:1.4'
-```
-
-## Usage
-Let's say you are a rock star :guitar: and you want to build an app to show a list of your favorite `Genre`s with a list of their top `Artist`s.
-
-First, define your custom `ExpandableGroup` class:
-
+# Dependency
+1. For using ExpandableRecyclerView module in sample app, include the source code and add the below dependencies in entry/build.gradle to generate hap/expandablerecyclerview.har.
 ``` java
-public class Genre extends ExpandableGroup<Artist> {
-
-  public Genre(String title, List<Artist> items) {
-    super(title, items);
-  }
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar', '*.har'])
+    testImplementation 'junit:junit:4.13'
+    implementation project(':expandablerecyclerview')
 }
 ```
-
-Next up, let's create the `ChildViewHolder` and `GroupViewHolder`. These are both wrappers around regular ol' `RecyclerView.ViewHolder`s so implement any view inflation and binding methods you may need.
-
+2. For using ExpandableRecyclerView in separate application using har file, add the har file in the entry/libs folder and add the dependencies in entry/build.gradle file.
 ``` java
-public class GenreViewHolder extends GroupViewHolder {
-
-  private TextView genreTitle;
-
-  public GenreViewHolder(View itemView) {
-    super(itemView);
-    genreTitle = itemView.findViewById(R.id.genre_title);
-  }
-
-  public void setGenreTitle(ExpandableGroup group) {
-    genreTitle.setText(group.getTitle());
-  }
+dependencies {
+	implementation fileTree(dir: 'libs', include: ['*.har'])
+	testImplementation 'junit:junit:4.13'
 }
 ```
 
+# Usage
+Let's say you are a rock star 🎸 and you want to build an app to show a list of your favorite Genres with a list of their top Artists.
+
+First create the Ability Slice and call the helper class by passing view and context as arguments and then call the `initViews` method of the helper class.
 ``` java
-public class ArtistViewHolder extends ChildViewHolder {
-
-  private TextView artistName;
-
-  public ArtistViewHolder(View itemView) {
-    super(itemView);
-    artistName = itemView.findViewById(R.id.artist_name);
-  }
-
-  public void setArtistName(Artist artist) {
-    artistName.setText(artist.getTitle());
-  }
+public class ExpandAbilitySlice extends AbilitySlice {
+    @Override
+    public void onStart(Intent intent) {
+        super.onStart(intent);
+        ComponentContainer rootView = (ComponentContainer) LayoutScatter.getInstance(this)
+                .parse(ResourceTable.Layout_ability_expandlist, null, false);
+        super.setUIContent(rootView);
+        ExpandAbilityHelper helper = new ExpandAbilityHelper(this, rootView);
+        helper.initViews();
+    }
 }
 ```
-
-Now we are ready for the juicy part - let's make our `ExpandableRecyclerViewAdapter`
-
-By including your `GroupViewHolder` and `ChildViewHolder` in the definition of the class, you'll see that the `onCreateGroupViewHolder` and `onCreateChildViewHolder` methods return the correct type :thumbsup:
-
+Inside the helper class, Initialize the view components by `initViews` method.
 ``` java
-public class GenreAdapter extends ExpandableRecyclerViewAdapter<GenreViewHolder, ArtistViewHolder> {
-
-  public GenreAdapter(List<? extends ExpandableGroup> groups) {
-    super(groups);
-  }
-
-  @Override
-  public GenreViewHolder onCreateGroupViewHolder(ViewGroup parent, int viewType) {
-    View view = inflater.inflate(R.layout.list_item_genre, parent, false);
-    return new GenreViewHolder(view);
-  }
-
-  @Override
-  public ArtistViewHolder onCreateChildViewHolder(ViewGroup parent, int viewType) {
-    View view = inflater.inflate(R.layout.list_item_artist, parent, false);
-    return new ArtistViewHolder(view);
-  }
-
-  @Override
-  public void onBindChildViewHolder(ArtistViewHolder holder, int flatPosition, ExpandableGroup group, int childIndex) {
-    final Artist artist = ((Genre) group).getItems().get(childIndex);
-    holder.setArtistName(artist.getName());
-  }
-
-  @Override
-  public void onBindGroupViewHolder(GenreViewHolder holder, int flatPosition, ExpandableGroup group) {
-    holder.setGenreTitle(group);
-  }
+public void initViews() {
+	getGroupItems();
+	getGroupIcons();
+	tooglebtn = (Button) rootView.findComponentById(ResourceTable.Id_toogle);
+	ScrollView parentLayout = (ScrollView) rootView.findComponentById(ResourceTable.Id_root_expand);
+	parentLayout.setBackground(getShapeElement(ResUtil.getColor(context, ResourceTable.Color_white)));
+	mGroupContainer = (ExpandableListContainer) rootView.findComponentById(ResourceTable.Id_lcGroupItems_expand);
+	prepareExpandableListAdapter();
 }
 ```
-
-Lastly you'll need either an `Activity` or `Fragment` to host your adapter. Once you've got that up and running, all that's left is to instantiate your fancy new `GenreAdapter` with a `List<Genre>`
-
+Then, Add all the Genre items in `mGroupNameItem` and their corresponding image in `mGroupImageItem `
 ``` java
-public class GenreActivity extends Activity {
-
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-
-    ...
-
-    List<Genre> genres = getGenres(); //see sample project's GenreDataFactory.java class for getGenres() method
-    RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-    LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-
-    //instantiate your adapter with the list of genres
-    GenreAdapter adapter = new GenreAdapter(genres);
-    recyclerView.setLayoutManager(layoutManager);
-    recyclerView.setAdapter(adapter);
-
-    ...
-
-  }
+private void getGroupItems() {
+        mGroupNameItem.add(ResUtil.getString(context, ResourceTable.String_item_Rock));
+        mGroupNameItem.add(ResUtil.getString(context, ResourceTable.String_item_Jazz));
+        mGroupNameItem.add(ResUtil.getString(context, ResourceTable.String_item_Classic));
+        mGroupNameItem.add(ResUtil.getString(context, ResourceTable.String_item_Salsa));
+        mGroupNameItem.add(ResUtil.getString(context, ResourceTable.String_item_Bluegrass));
+        mFinalGroupNameItem.addAll(mGroupNameItem);
 }
 ```
-
-## Saving And Restoring Expand / Collapse State
-
-If you want to save the expand and collapse state of your adapter, you have to explicitly call through to the adapters `onSaveInstanceState()` and `onRestoreInstanceState()`in the calling `Activity`
-
-```java
-public class GenreActivity extends Activity {
-
-  ...
-
-  @Override
-  protected void onSaveInstanceState(Bundle outState) {
-    super.onSaveInstanceState(outState);
-    adapter.onSaveInstanceState(outState);
-  }
-
-  @Override
-  protected void onRestoreInstanceState(Bundle savedInstanceState) {
-    super.onRestoreInstanceState(savedInstanceState);
-    adapter.onRestoreInstanceState(savedInstanceState);
-  }
+``` java
+private void getGroupIcons() {
+	mGroupImageItem.add(ResourceTable.Media_rock);
+	mGroupImageItem.add(ResourceTable.Media_jazz);
+	mGroupImageItem.add(ResourceTable.Media_classic);
+	mGroupImageItem.add(ResourceTable.Media_salsa);
+	mGroupImageItem.add(ResourceTable.Media_bluegrass);
 }
-
 ```
-
-## Programmatic Expanding and Collapsing
-
-The `ExpandableRecyclerViewAdapter` exposes methods to control the expanded and
-collapsed state.
-
-First up we have the toggles, `.toggleGroup(int)` and
-`.toggleGroup(ExpandableGroup)`. These are handy for when you control the
-states explicitly.
-
-```java
-public class GenreActivity extends Activity {
-
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-
-    ...
-
-    Button showAllToggle = findViewById(R.id.show_all);
-    showAllToggle.setOnClickListener(new View.OnClickListener() {
-      public void onClick(View v) {
-        for (int i = adapter.groups().size() - 1; i >= 0; i--) {
-          adapter.toggleGroup(i);
+Now the binding of the data to the view is done inside the `prepareExpandableListAdapter` method. Here, we will decide whether the item is a child or a group item by checking whether it is present in `mTempChildNameItem` or not.
+``` java
+ExpandableListAdapter<String> expandableListAdapter = new ExpandableListAdapter<String>(context,
+                mGroupNameItem, mGroupImageItem, ResourceTable.Layout_ability_listview_item) {
+    @Override
+    protected void bind(ViewHolder holder, String text, Integer image, int position) {
+	if (!mTempChildNameItem.contains(text)) {
+	    // Set green background for parent/Group
+	    holder.makeInvisibleButton(ResourceTable.Id_checkbtn);
+	    holder.makeInvisibleImage(ResourceTable.Id_childstar);
+	    holder.setGroupItemBackground(ResourceTable.Id_groupContainer, ResourceTable.Color_white);
+	    holder.setText(ResourceTable.Id_tvGroupTitle, text, Color.GRAY,
+		    ResUtil.getIntDimen(context, ResourceTable.Float_group_text_size));
+	    holder.setGroupImage(ResourceTable.Id_ivGroupIcon, image,
+		    ShapeElement.RECTANGLE, Image.ScaleMode.STRETCH, ResourceTable.Color_white);
+	    if (!mTempGroupNameItem.contains(text)) {
+		// Set divider & arrow down icon
+		holder.setGroupImage(ResourceTable.Id_ArrowIcon, ResourceTable.Media_arrow_Down,
+			ShapeElement.OVAL, Image.ScaleMode.CENTER, ResourceTable.Color_white);
+	    } else {
+		// Remove divider & arrow up icon
+		holder.setGroupImage(ResourceTable.Id_ArrowIcon, ResourceTable.Media_arrow_Up,
+			ShapeElement.OVAL, Image.ScaleMode.CENTER, ResourceTable.Color_white);
+	    }
+	} else {
+	    // Add child items to list
+	    holder.makeInvisibleButton(ResourceTable.Id_checkbtn);
+	    holder.makeInvisibleImage(ResourceTable.Id_checkbtn);
+	    holder.setText(ResourceTable.Id_tvGroupTitle, text, Color.GRAY,
+		    ResUtil.getIntDimen(context, ResourceTable.Float_child_text_size));
+	}
+    }
+};
+mGroupContainer.setItemProvider(expandableListAdapter);
+```
+Then we set the onItemClickListener and call the `checkChild` method to check if the clickedItem is a Group item (i.e. Genre) or the Child item (i.e. Artist).
+``` java
+expandableListAdapter.setOnItemClickListener((component, position) -> {
+    String clickedItem = mGroupNameItem.get(position);
+    checkChild(clickedItem, expandableListAdapter);
+});
+```
+`mTempGroupNameItem` contains all the Group item that are in expand state and `mTempChildNameItem` will contains child of such GroupItems.
+While collapsing the group, we will remove the group items from `mTempGroupNameItem` and their child items from `mTempChildNameItem`.
+``` java
+private void checkChild(String clickedItem, ExpandableListAdapter<String> expandableListAdapter) {
+	if (!mTempChildNameItem.contains(clickedItem)) {
+	    if (mTempGroupNameItem.contains(clickedItem)) {
+		int actualItemPosition = mFinalGroupNameItem.indexOf(clickedItem);
+		removeChildItems(actualItemPosition, clickedItem);
+		mTempGroupNameItem.remove(clickedItem);
+	    } else {
+		int actualItemPosition = mFinalGroupNameItem.indexOf(clickedItem);
+		addChildItems(actualItemPosition, clickedItem);
+		mTempGroupNameItem.add(clickedItem);
+	    }
+	    expandableListAdapter.setData(mGroupNameItem);
+	} else {
+	    showToast();
+	}
+}
+```
+If it is the Group item and it is not there in `mTempGroupNameItem`, that means we have to expand it and then add it to `mTempGroupNameItem` and their corresponding child items to `mTempChildNameItem`.
+``` java
+private void addChildItems(int actualPosition, String clickedItem) {
+        String[] childItems = childItems().get(actualPosition);
+        int itemPositionFromGroup = mGroupNameItem.indexOf(clickedItem);
+        for (String item : childItems) {
+            itemPositionFromGroup = itemPositionFromGroup + 1;
+            mGroupNameItem.add(itemPositionFromGroup, item);
+            mTempChildNameItem.add(item);
+            mGroupImageItem.add(itemPositionFromGroup, ResourceTable.Media_star);
         }
-      }
-    });
-
-  }
+}
+``` 
+If the `clickedItem` is already there in `mTempGroupNameItem`, then we have to collapse it and then remove it from `mTempGroupNameItem` and the 
+corresponding child items from `mTempChildNameItem`.
+``` java
+private void removeChildItems(int position, String clickedItem) {
+        String[] items = childItems().get(position);
+        int itemPositionFromGroup = mGroupNameItem.indexOf(clickedItem);
+        for (String name : items) {
+            mGroupNameItem.remove(itemPositionFromGroup + 1);
+            mGroupImageItem.remove(itemPositionFromGroup + 1);
+            mTempChildNameItem.remove(name);
+        }
+}
+``` 
+### FavouriteItems
+We can maintain our favorite child items, i.e. favourite Artists, by adding them to an ArrayList `mFavouriteItem`.
+``` java
+private void getFavouriteItems() {
+        mFavouriteItem.add(ResUtil.getString(context, ResourceTable.String_item_child_Rock1));
+        mFavouriteItem.add(ResUtil.getString(context, ResourceTable.String_item_child_Rock4));
+        mFavouriteItem.add(ResUtil.getString(context, ResourceTable.String_item_child_Jazz1));
+        mFavouriteItem.add(ResUtil.getString(context, ResourceTable.String_item_child_Jazz2));
+        mFavouriteItem.add(ResUtil.getString(context, ResourceTable.String_item_child_Classic2));
+        mFavouriteItem.add(ResUtil.getString(context, ResourceTable.String_item_child_Salsa1));
+        mFavouriteItem.add(ResUtil.getString(context, ResourceTable.String_item_child_Bluegrass1));
 }
 ```
 
-We also expose explicit methods to control the expanding and collapsing of
-specific groups, `.expandGroup()` and `.collapseGroup()`. For example, to
-expand the first group immediately:
-
-```java
-public class GenreActivity extends Activity {
-
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-
-    ...
-
-    adapter.expandGroup(0);
-
-  }
-}
-```
-
-## Adding Custom Expand / Collapse Animations
-
-If you want to add a custom `Drawable` that animates based on a groups state, override the `expand()` and `collapse()` methods in your `GroupViewHolder`:
-
+### CheckableChildItems
+We are maintaining mSelectedChild, which is a HashMap, and will map the checked item to its parent item. We are updating this HashMap whenever any list item is getting clicked. 
 ``` java
-public class GenreViewHolder extends GroupViewHolder {
-
-  ...
-
-  @Override
-  public void expand() {
-    animateExpand();
-  }
-
-  @Override
-  public void collapse() {
-    animateCollapse();
-  }
-}
-```
-
-## Listening to Expand/Collapse events
-
-If you want register an `ExpandCollapseListener` outside of the adapter, you can simply call `setOnGroupExpandCollapseListener` on the `ExpandableRecyclerViewAdapter`
-
-``` java
-  adapter.setOnGroupExpandCollapseListener(new GroupExpandCollapseListener() {
-    @Override
-    public void onGroupExpanded(ExpandableGroup group) {
-
-    }
-
-    @Override
-    public void onGroupCollapsed(ExpandableGroup group) {
-
-    }
-  });
-```
-
-## Multiple Child and Group Types
-
-The `MultiTypeExpandableRecyclerViewAdapter` allows subclasses to implement multiple different view types for both children and groups.
-
-Continuing with our genre example, let's say you wanted to display regular artists differently from your favorite artists. Let's start by making a new `FavoriteArtistViewHolder`
-
-``` java
-public class FavoriteArtistViewHolder extends ChildViewHolder {
-
-  private TextView favoriteArtistName;
-
-  public FavoriteArtistViewHolder(View itemView) {
-    super(itemView);
-    favoriteArtistName = (TextView) itemView.findViewById(R.id.list_item_favorite_artist_name);
-  }
-
-  public void setArtistName(String name) {
-    favoriteArtistName.setText(name);
-  }
-```
-
-Just like the regular `ArtistViewHolder`, `FavoriteArtistViewHolder` must extends `ChildViewHolder`.
-
-Next up, let's create a subclass of `MultiTypeExpandableRecyclerViewAdapter` called `MultiTypeGenreAdapter` and let's add two static `int`s representing our two artist view types:
-
-```java
-public class MultiTypeGenreAdapter extends MultiTypeExpandableRecyclerViewAdapter<GenreViewHolder, ChildViewHolder> {
-
-
-  public static final int FAVORITE_VIEW_TYPE = 3;
-  public static final int ARTIST_VIEW_TYPE = 4;
-  ...
-```
-
-Notice we started used values > 2. That's because `ExpandableListPosition.CHILD` and `ExpandableListPositon.GROUP` are `1` and `2` respectively so they are already taken.
-
-Since we only want a single view type for groups, we only need to override `getChildViewType()`. As `getGroupViewType()` will default to `ExpandableListPosition.GROUP`.
-
-``` java
-  @Override
-  public int getChildViewType(int position, ExpandableGroup group, int childIndex) {
-    if (((Genre) group).getItems().get(childIndex).isFavorite()) {
-      return FAVORITE_VIEW_TYPE;
+expandableListAdapter.setOnItemClickListener((component, position) -> {
+    ParentChild value = mGroupNameItem.get(position);
+    String clickedItem = value.getChildItem();
+    if (!mTempChildNameItem.contains(clickedItem)) {
+	if (mTempGroupNameItem.contains(clickedItem)) {
+	    int actualItemPosition = mFinalGroupNameItem.indexOf(clickedItem);
+	    removeChildItems(actualItemPosition, position);
+	    mTempGroupNameItem.remove(clickedItem);
+	} else {
+	    int actualItemPosition = mFinalGroupNameItem.indexOf(clickedItem);
+	    addChildItems(actualItemPosition, clickedItem, position);
+	    mTempGroupNameItem.add(clickedItem);
+	}
+	expandableListAdapter.setData(mGroupNameItem);
     } else {
-      return ARTIST_VIEW_TYPE;
+	String parentGroup = value.getParentItem();
+	if (mSelectedChild.containsKey(parentGroup)) {
+	    mSelectedChild.remove(parentGroup);
+	}
+	mSelectedChild.put(parentGroup, clickedItem);
+	expandableListAdapter.setData(mGroupNameItem);
     }
-  }
+});
 ```
-
-Since we provided custom view types for our children, we must also override `isChild()`
-
-```java
-  @Override
-  public boolean isChild(int viewType) {
-    return viewType == FAVORITE_VIEW_TYPE || viewType == ARTIST_VIEW_TYPE;
-  }
-```
-
-And now, just like in any other `RecyclerView.Adapter` in our `onCreateChildViewHolder` and our `onBindChildViewHolder` we can use the provided parameters to switch on the different view tyeps:
+To handle the case where a child item can be under multiple groups, we have created a class `ParentChild` that will store both the parent and the child name for each of the list items. While rendering the view, we will check only those items whose parent child pair is present in `mSelectedChild` HashMap.
 ``` java
-  @Override
-  public ChildViewHolder onCreateChildViewHolder(ViewGroup parent, int viewType) {
-    switch (viewType) {
-      case ARTIST_VIEW_TYPE:
-        View artist = from(parent.getContext()).inflate(R.layout.list_item_artist, parent, false);
-        return new ArtistViewHolder(artist);
-      case FAVORITE_VIEW_TYPE:
-        View favorite =
-            from(parent.getContext()).inflate(R.layout.list_item_favorite_artist, parent, false);
-        return new FavoriteArtistViewHolder(favorite);
-      default:
-        throw new IllegalArgumentException("Invalid viewType");
-    }
-  }
-
-  @Override
-  public void onBindChildViewHolder(ChildViewHolder holder, int flatPosition, ExpandableGroup group,
-      int childIndex) {
-    int viewType = getItemViewType(flatPosition);
-    Artist artist = ((Genre) group).getItems().get(childIndex);
-    switch (viewType) {
-      case ARTIST_VIEW_TYPE:
-        ((ArtistViewHolder) holder).setArtistName(artist.getName());
-        break;
-      case FAVORITE_VIEW_TYPE:
-        ((FavoriteArtistViewHolder) holder).setArtistName(artist.getName());
-    }
-  }
-```
-
-## Expandable Check RecyclerView
-An extension of `expandablerecyclerview` for checking single or multiple children within a group
-
-The setup for the single and multi check versions is very similar to the `expandablerecyclerview` we walked through above. Here are a few of the notable differences...
-
-### CheckedExpandableGroup
-
-Instead of `ExpandableGroup` you must use `CheckedExpandableGroup`. `CheckedExpandableGroup` is a subclass of `ExpandableGroup` that uses a `SparseBooleanArray` to hold onto which of it's children are checked.
-
-The `expandablecheckrecyclerview` library comes with two default implementations -  `SingleCheckExpandableGroup` and `MultiCheckExpandableGroup`.
-
-### Clearing Choices
-
-The `CheckableChildRecyclerViewAdapter` has a `clearChoices()` which un checks any currently checked children.
-
-### CheckableChildViewHolder
-
-The `CheckableChildViewHolder` is a subclass of `ChildViewHolder` that has a `Checkable` widget. The `Checkable` interface is initially not set, so in order to see your children view states update, you must set a `View` that implements `Checkable` in your view holder.
-
-``` java
-public class SingleCheckArtistViewHolder extends CheckableChildViewHolder {
-
-  private CheckedTextView artistName;
-
-  public SingleCheckArtistViewHolder(View itemView) {
-    super(itemView);
-    artistName = (CheckedTextView) itemView.findViewById(R.id.list_item_singlecheck_artist_name);
-  }
-
-  @Override
-  public Checkable getCheckable() {
-    return artistName;
-  }
-  ...
+if (mSelectedChild.containsKey(text.getParentItem()) && mSelectedChild.get(text.getParentItem())
+	    .equals(text.getChildItem())) {
+	holder.setChecked(ResourceTable.Id_checkbtn);
+} else {
+	holder.setUnChecked(ResourceTable.Id_checkbtn);
 }
 ```
 
-### Listening to Child Click Events
+### Expand List
+This will have a list of Group Items (i.e. Genre) and on clicking on it, the group will expand and their corresponding child items (i.e Artist) will be visible.
+we also have `TOGGLE CLASSIC GROUP` button that can automatically expand and collapse the Classic group item.
 
-There is a custom callback for click events on children of a `CheckedExpandableGroup` which returns you the `View` of the row item that was clicked, the current checked state of the child, the containing `CheckedExpandableGroup` group and the index of the child that was clicked.
+![expand](https://user-images.githubusercontent.com/77639268/124965177-74149700-e03f-11eb-8cb2-496a2076aba5.gif)
 
-``` java
-  adapter.setChildClickListener(new OnCheckChildClickListener() {
-    @Override
-    public void onCheckChildCLick(View v, boolean checked, CheckedExpandableGroup group,
-        int childIndex) {
-    }
-  });
+### MultiType List
+In this, we will have our favourite child items. While rendering the view we can add the star image in front of each of those items that are present in `mFavouriteItem`.
 
-```
+![multitype](https://user-images.githubusercontent.com/77639268/124965356-aa521680-e03f-11eb-9258-701c99451682.gif)
 
-## Sample App
+### SingleCheck List
+This will allow the us to select one Artist among the other artists of a particulat Genre. It also provides us with the `CLEAR SELECTIONS` button that will clear all our previous choices. 
 
-To see the complete code for all the above examples along with unit tests for the adapters check out the `sample` app. The app has the following packages:
+![singleCheck](https://user-images.githubusercontent.com/77639268/124965380-afaf6100-e03f-11eb-8fbe-613fa32c181d.gif)
 
-### expand
-An example of basic `ExpandableRecyclerViewAdapter`
+### MultiCheck List
+This will allow the us to select multiple Artist of a particulat Genre. It also provides us with the `PROGRAMMATICALLY CHECK BOSTON` button that will automatically check the boston Artist of Rock Genre.
 
-<img src="https://cloud.githubusercontent.com/assets/5386934/17074123/b9d1efca-502c-11e6-9c9f-fb6180ee337f.gif" width=300 />
+![multicheck](https://user-images.githubusercontent.com/77639268/124965392-b5a54200-e03f-11eb-8676-7bd730c11796.gif)
 
-
-### multicheck
-An example of a `CheckableChildRecyclerViewAdapter` using `MultiCheckExpandableGroup`
-
-<img src="https://cloud.githubusercontent.com/assets/5386934/17074122/b9d0ec06-502c-11e6-8548-7647f63114dd.gif" width=300 />
-
-
-### single check
-An example of a `CheckableChildRecyclerViewAdapter` using `SingleCheckExpandableGroup`
-
-<img src="https://cloud.githubusercontent.com/assets/5386934/17074124/b9d22df0-502c-11e6-8b9c-d70e00c10909.gif" width=300 />
-
-
-### multi type
-An example of a `MultiTypeExpandableRecyclerViewAdapter` using two different child view holders
-
-<img src="https://cloud.githubusercontent.com/assets/5386934/17262690/ac0eeb9e-5591-11e6-9809-8b76644defee.gif" width=300/>
-
-## Contributing
-
-See the [CONTRIBUTING] document. Thank you, [contributors]!
-
-## License
-
-Expandable RecyclerView is Copyright (c) 2016 thoughtbot, inc. It is free software, and may be redistributed under the terms specified in the [LICENSE] file.
-
-## About
-
-Expandable RecyclerView is maintained by [@mandybess](https://github.com/mandybess)
-
-![thoughtbot](https://thoughtbot.com/logo.png)
-
-Expandable RecyclerView is maintained and funded by thoughtbot, inc. The names and logos for thoughtbot are trademarks of thoughtbot, inc.
-
-We love open source software! See [our other projects][tools] or [hire us][hire] to help build your product.
-
-  [tools]: https://thoughtbot.com/tools?utm_source=github
-  [hire]: https://thoughtbot.com/hire-us?utm_source=github
-  [LICENSE]: /LICENSE
-  [CONTRIBUTING]: CONTRIBUTING.md
-  [contributors]: https://github.com/thoughtbot/expandable-recycler-view/graphs/contributors
+# License
+ExpandableRecyclerView is Copyright (c) 2016 thoughtbot, inc. It is free software, and may be redistributed under the terms specified in the [LICENSE](https://github.com/thoughtbot/expandable-recycler-view/blob/master/LICENSE) file.
