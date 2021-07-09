@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:ohos="http://schemas.huawei.com/res/ohos"
+    ohos:id="$+id:root_expand"
+    ohos:height="match_parent"
+    ohos:width="match_parent">
+
+
+    <DirectionalLayout
+        ohos:height="match_parent"
+        ohos:width="match_parent"
+        ohos:orientation="vertical">
+
+        <Button
+            ohos:id="$+id:toogle"
+            ohos:background_element="$ohos:color:id_color_activated_end_dark"
+            ohos:text_size="$float:text_20fp"
+            ohos:top_margin="$float:padding_5vp"
+            ohos:top_padding="$float:padding_5vp"
+            ohos:bottom_padding="$float:padding_5vp"
+            ohos:text="$string:Toggle_message"
+            ohos:height="match_content"
+            ohos:width="match_parent"/>
+
+        <DependentLayout
+            ohos:height="match_parent"
+            ohos:width="match_parent">
+
+            <com.thoughtbot.expandablerecyclerview.ExpandableListContainer
+                ohos:id="$+id:lcGroupItems_expand"
+                ohos:height="match_content"
+                ohos:width="match_parent"
+                ohos:start_margin="$float:margin_10vp"/>
+
+        </DependentLayout>
+    </DirectionalLayout>
+</ScrollView>

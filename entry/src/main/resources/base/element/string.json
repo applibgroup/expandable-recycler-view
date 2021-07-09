@@ -1,0 +1,156 @@
+{
+  "string": [
+    {
+      "name": "app_name",
+      "value": "ExpandableRecyclerView"
+    },
+    {
+      "name": "mainability_description",
+      "value": "hap sample empty page"
+    },
+    {
+      "name": "android_versions_title",
+      "value": "Android Versions"
+    },
+    {
+      "name": "android_versions_description",
+      "value": "Starting from Cupcake (API LEVEL 3)"
+    },
+    {
+      "name": "clicked_on_child_item",
+      "value": "You have clicked on child item "
+    },
+    {
+      "name": "clicked_on_Boston_item",
+      "value": "Boston is already checked "
+    },
+    {
+      "name": "item_Rock",
+      "value": "Rock"
+    },
+    {
+      "name": "item_Jazz",
+      "value": "Jazz"
+    },
+    {
+      "name": "item_Classic",
+      "value": "Classic"
+    },
+    {
+      "name": "item_Salsa",
+      "value": "Salsa"
+    },
+    {
+      "name": "item_Bluegrass",
+      "value": "Bluegrass"
+    },
+    {
+      "name": "item_child_Rock1",
+      "value": "Queen"
+    },
+    {
+      "name": "item_child_Rock2",
+      "value": "Styx"
+    },
+    {
+      "name": "item_child_Rock3",
+      "value": "REO Speedwagon"
+    },
+    {
+      "name": "item_child_Rock4",
+      "value": "Boston"
+    },
+    {
+      "name": "item_child_Jazz1",
+      "value": "Miles Davis"
+    },
+    {
+      "name": "item_child_Jazz2",
+      "value": "Ella Fitzgerald"
+    },
+    {
+      "name": "item_child_Jazz3",
+      "value": "Billie Holiday"
+    },
+    {
+      "name": "item_child_Classic1",
+      "value": "Ludwig van Beethoven"
+    },
+    {
+      "name": "item_child_Classic2",
+      "value": "Johann Sebastian Bach"
+    },
+    {
+      "name": "item_child_Classic3",
+      "value": "Johannes Brahms"
+    },
+    {
+      "name": "item_child_Classic4",
+      "value": "Giacomo Puccini"
+    },
+    {
+      "name": "item_child_Salsa1",
+      "value": "Hector Lavoe"
+    },
+    {
+      "name": "item_child_Salsa2",
+      "value": "Celia Cruz"
+    },
+    {
+      "name": "item_child_Salsa3",
+      "value": "Willie Colon"
+    },
+    {
+      "name": "item_child_Salsa4",
+      "value": "Marc Anthony"
+    },
+    {
+      "name": "item_child_Bluegrass1",
+      "value": "Bill Monroe"
+    },
+    {
+      "name": "item_child_Bluegrass2",
+      "value": "Earl Scruggs"
+    },
+    {
+      "name": "item_child_Bluegrass3",
+      "value": "Osborne Brothers"
+    },
+    {
+      "name": "item_child_Bluegrass4",
+      "value": "John Hartford"
+    },
+    {
+      "name": "Toggle_message",
+      "value": "TOGGLE CLASSIC GROUP"
+    },
+    {
+      "name": "clear_message",
+      "value": "CLEAR SELECTIONS"
+    },
+    {
+      "name": "expand",
+      "value": "EXPAND SAMPLE"
+    },
+    {
+      "name": "multitype",
+      "value": "MULTI TYPE SAMPLE"
+    },
+    {
+      "name": "multicheck",
+      "value": "MULTI CHECK SAMPLE"
+    },
+    {
+      "name": "singlecheck",
+      "value": "SINGLE CHECK SAMPLE"
+    },
+    {
+      "name": "multitypecheck",
+      "value": "MULTI TYPE AND CHECK SAMPLE"
+    },
+    {
+      "name": "boston_message",
+      "value": "PROGRAMMATICALLY CHECK BOSTON"
+    }
+  ]
+}

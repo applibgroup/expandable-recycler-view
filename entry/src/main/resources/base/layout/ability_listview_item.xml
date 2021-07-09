@@ -1,0 +1,69 @@
+<DirectionalLayout
+    xmlns:ohos="http://schemas.huawei.com/res/ohos"
+    ohos:id="$+id:itemRoot"
+    ohos:height="match_content"
+    ohos:width="match_parent"
+    ohos:orientation="vertical">
+
+    <DirectionalLayout
+        ohos:id="$+id:group_view"
+        ohos:height="match_content"
+        ohos:width="match_parent"
+        ohos:alignment="center"
+        ohos:orientation="horizontal">
+
+        <Image
+            ohos:id="$+id:ivGroupIcon"
+            ohos:height="$float:height_66vp"
+            ohos:width="$float:width_66vp"
+            ohos:padding="$float:padding_3vp"/>
+
+        <DependentLayout
+            ohos:id="$+id:groupContainer"
+            ohos:height="match_content"
+            ohos:width="match_parent"
+            ohos:bottom_padding="$float:padding_3vp"
+            ohos:top_padding="$float:padding_3vp">
+
+            <Text
+                ohos:id="$+id:tvGroupTitle"
+                ohos:height="match_content"
+                ohos:width="match_content"
+                ohos:align_parent_start="true"
+                ohos:padding="$float:padding_5vp"
+                ohos:start_margin="$float:margin_10vp"
+                ohos:vertical_center="true"/>
+
+            <Image
+                ohos:id="$+id:childstar"
+                ohos:height="$float:height_20vp"
+                ohos:width="$float:width_30vp"
+                ohos:right_of="$id:tvGroupTitle"
+                ohos:padding="$float:padding_3vp"
+                ohos:vertical_center="true"/>
+
+
+            <Checkbox
+                ohos:id="$+id:checkbtn"
+                ohos:align_parent_end="true"
+                ohos:focus_border_enable="true"
+                ohos:clickable="false"
+                ohos:background_element="$ohos:color:id_color_activated_end_dark"
+                ohos:text_size="$float:height_30vp"
+                ohos:right_margin="$float:margin_16vp"
+                ohos:height="$float:height_20vp"
+                ohos:width="$float:height_20vp"/>
+
+            <Image
+                ohos:id="$+id:ArrowIcon"
+                ohos:height="$float:height_30vp"
+                ohos:width="$float:width_30vp"
+                ohos:align_parent_end="true"
+                ohos:end_margin="$float:margin_10vp"
+                ohos:padding="$float:padding_3vp"
+                ohos:vertical_center="true"/>
+
+        </DependentLayout>
+    </DirectionalLayout>
+
+</DirectionalLayout>

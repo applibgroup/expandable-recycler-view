@@ -1,0 +1,120 @@
+{
+  "float": [
+    {
+      "name": "margin_5vp",
+      "value": "5vp"
+    },
+    {
+      "name": "margin_10vp",
+      "value": "10vp"
+    },
+    {
+      "name": "margin_16vp",
+      "value": "16vp"
+    },
+    {
+      "name": "margin_60vp",
+      "value": "60vp"
+    },
+    {
+      "name": "padding_3vp",
+      "value": "3vp"
+    },
+    {
+      "name": "padding_5vp",
+      "value": "5vp"
+    },
+    {
+      "name": "padding_10vp",
+      "value": "10vp"
+    },
+    {
+      "name": "width_66vp",
+      "value": "66vp"
+    },
+    {
+      "name": "height_66vp",
+      "value": "66vp"
+    },
+    {
+      "name": "height_20vp",
+      "value": "20vp"
+    },
+    {
+      "name": "width_35vp",
+      "value": "35vp"
+    },
+    {
+      "name": "height_35vp",
+      "value": "35vp"
+    },
+    {
+      "name": "width_30vp",
+      "value": "30vp"
+    },
+    {
+      "name": "height_30vp",
+      "value": "30vp"
+    },
+    {
+      "name": "width_40vp",
+      "value": "40vp"
+    },
+    {
+      "name": "height_40vp",
+      "value": "40vp"
+    },
+    {
+      "name": "width_50vp",
+      "value": "50vp"
+    },
+    {
+      "name": "height_50vp",
+      "value": "50vp"
+    },
+    {
+      "name": "width_80vp",
+      "value": "80vp"
+    },
+    {
+      "name": "height_80vp",
+      "value": "80vp"
+    },
+    {
+      "name": "height_1vp",
+      "value": "0.5vp"
+    },
+    {
+      "name": "text_12fp",
+      "value": "12fp"
+    },
+    {
+      "name": "text_15fp",
+      "value": "15fp"
+    },
+    {
+      "name": "text_20fp",
+      "value": "20fp"
+    },
+    {
+      "name": "text_19fp",
+      "value": "19fp"
+    },
+    {
+      "name": "text_25fp",
+      "value": "25fp"
+    },
+    {
+      "name": "text_22fp",
+      "value": "22fp"
+    },
+    {
+      "name": "group_text_size",
+      "value": "20fp"
+    },
+    {
+      "name": "child_text_size",
+      "value": "15fp"
+    }
+  ]
+}
