@@ -16,36 +16,23 @@
 
 package com.thoughtbot.expandablerecyclerview.multitype;
 
-import ohos.agp.colors.RgbColor;
 import ohos.agp.components.ComponentContainer;
 import ohos.agp.components.Image;
 import ohos.agp.components.ScrollView;
 import ohos.agp.components.element.ShapeElement;
 import ohos.agp.utils.Color;
-import ohos.agp.utils.TextAlignment;
-import ohos.agp.window.dialog.ToastDialog;
 import ohos.app.Context;
 import com.thoughtbot.expandablerecyclerview.ExpandableListAdapter;
 import com.thoughtbot.expandablerecyclerview.ExpandableListContainer;
 import com.thoughtbot.expandablerecyclerview.ResourceTable;
+import com.thoughtbot.expandablerecyclerview.entities.CommonHelper;
+import com.thoughtbot.expandablerecyclerview.entities.ParentChild;
 import com.thoughtbot.expandablerecyclerview.util.ResUtil;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Helper class for MultiTypeAbilitySlice.
  */
-public class MultiTypeHelper {
-    private ExpandableListContainer mGroupContainer;
-    private ArrayList<String> mFinalGroupNameItem = new ArrayList<>();
-    private ArrayList<String> mGroupNameItem = new ArrayList<>();
-    private ArrayList<String> mTempGroupNameItem = new ArrayList<>();
-    private ArrayList<String> mTempChildNameItem = new ArrayList<>();
-    private ArrayList<Integer> mGroupImageItem = new ArrayList<>();
-    private ArrayList<String> mFavouriteItem = new ArrayList<>();
-    private Context context;
-    private ComponentContainer rootView;
-
+public class MultiTypeHelper extends CommonHelper {
     public MultiTypeHelper(Context context, ComponentContainer rootView) {
         this.context = context;
         this.rootView = rootView;
@@ -55,9 +42,9 @@ public class MultiTypeHelper {
      * This method is used to init view components.
      */
     public void initViews() {
+        getFavouriteItems();
         getGroupItems();
         getGroupIcons();
-        getFavouriteItems();
         ScrollView parentLayout = (ScrollView) rootView.findComponentById(ResourceTable.Id_root_multitype);
         parentLayout.setBackground(getShapeElement(ResUtil.getColor(context, ResourceTable.Color_white)));
         mGroupContainer = (ExpandableListContainer)
@@ -66,187 +53,52 @@ public class MultiTypeHelper {
     }
 
     /**
-     * This method is used to prepare group items.
-     */
-    private void getGroupItems() {
-        mGroupNameItem.add(ResUtil.getString(context, ResourceTable.String_item_Rock));
-        mGroupNameItem.add(ResUtil.getString(context, ResourceTable.String_item_Jazz));
-        mGroupNameItem.add(ResUtil.getString(context, ResourceTable.String_item_Classic));
-        mGroupNameItem.add(ResUtil.getString(context, ResourceTable.String_item_Salsa));
-        mGroupNameItem.add(ResUtil.getString(context, ResourceTable.String_item_Bluegrass));
-        mFinalGroupNameItem.addAll(mGroupNameItem);
-    }
-
-    /**
-     * This method is used to prepare group items images.
-     */
-    private void getGroupIcons() {
-        mGroupImageItem.add(ResourceTable.Media_rock);
-        mGroupImageItem.add(ResourceTable.Media_jazz);
-        mGroupImageItem.add(ResourceTable.Media_classic);
-        mGroupImageItem.add(ResourceTable.Media_salsa);
-        mGroupImageItem.add(ResourceTable.Media_bluegrass);
-    }
-
-    /**
-     * This method is used to prepare Favourite child items.
-     */
-    private void getFavouriteItems() {
-        mFavouriteItem.add(ResUtil.getString(context, ResourceTable.String_item_child_Rock1));
-        mFavouriteItem.add(ResUtil.getString(context, ResourceTable.String_item_child_Rock4));
-        mFavouriteItem.add(ResUtil.getString(context, ResourceTable.String_item_child_Jazz1));
-        mFavouriteItem.add(ResUtil.getString(context, ResourceTable.String_item_child_Jazz2));
-        mFavouriteItem.add(ResUtil.getString(context, ResourceTable.String_item_child_Classic2));
-        mFavouriteItem.add(ResUtil.getString(context, ResourceTable.String_item_child_Salsa1));
-        mFavouriteItem.add(ResUtil.getString(context, ResourceTable.String_item_child_Bluegrass1));
-    }
-
-    /**
-     * This method is used to prepare adapter for list data.
+     * This method is used to prepare adapter for holding data.
      */
     private void prepareExpandableListAdapter() {
-        ExpandableListAdapter<String> expandableListAdapter = new ExpandableListAdapter<String>(context,
+        ExpandableListAdapter<ParentChild> expandableListAdapter = new ExpandableListAdapter<ParentChild>(context,
                 mGroupNameItem, mGroupImageItem, ResourceTable.Layout_ability_listview_item) {
             @Override
-            protected void bind(ViewHolder holder, String text, Integer image, int position) {
-                if (!mTempChildNameItem.contains(text)) {
-                    // Set green background
-                    holder.makeInvisibleButton(ResourceTable.Id_checkbtn);
-                    holder.setGroupItemBackground(ResourceTable.Id_groupContainer, ResourceTable.Color_white);
-                    holder.setText(ResourceTable.Id_tvGroupTitle, text, Color.GRAY,
-                            ResUtil.getIntDimen(context, ResourceTable.Float_group_text_size));
-                    holder.setGroupImage(ResourceTable.Id_ivGroupIcon, image, ShapeElement.RECTANGLE,
-                            Image.ScaleMode.STRETCH, ResourceTable.Color_white);
-                    if (!mTempGroupNameItem.contains(text)) {
-                        // Set divider & plus icon
-                        holder.setGroupImage(ResourceTable.Id_ArrowIcon, ResourceTable.Media_arrow_Down,
-                                ShapeElement.OVAL, Image.ScaleMode.CENTER, ResourceTable.Color_white);
-                    } else {
-                        // Remove divider & minus icon
-                        holder.setGroupImage(ResourceTable.Id_ArrowIcon, ResourceTable.Media_arrow_Up,
-                                ShapeElement.OVAL, Image.ScaleMode.CENTER, ResourceTable.Color_white);
-                    }
-                } else {
-                    // Add child items to list
-                    holder.makeInvisibleButton(ResourceTable.Id_checkbtn);
-                    holder.setText(ResourceTable.Id_tvGroupTitle, text, Color.GRAY,
-                            ResUtil.getIntDimen(context, ResourceTable.Float_child_text_size));
-                    //to add image only for the favourite items
-                    if (mFavouriteItem.contains(text)) {
-                        holder.setGroupImage(ResourceTable.Id_childstar, ResourceTable.Media_star,
-                                ShapeElement.OVAL, Image.ScaleMode.CENTER, ResourceTable.Color_white);
-                    }
-                }
+            protected void bind(ViewHolder holder, ParentChild text, Integer image, int position) {
+                handleListItem(holder, text, image);
             }
         };
-        mGroupContainer.setItemProvider(expandableListAdapter);
-
-        expandableListAdapter.setOnItemClickListener((component, position) -> {
-            String clickedItem = mGroupNameItem.get(position);
-            if (!mTempChildNameItem.contains(clickedItem)) {
-                if (mTempGroupNameItem.contains(clickedItem)) {
-                    int actualItemPosition = mFinalGroupNameItem.indexOf(clickedItem);
-                    removeChildItems(actualItemPosition, clickedItem);
-                    mTempGroupNameItem.remove(clickedItem);
-                } else {
-                    int actualItemPosition = mFinalGroupNameItem.indexOf(clickedItem);
-                    addChildItems(actualItemPosition, clickedItem);
-                    mTempGroupNameItem.add(clickedItem);
-                }
-                expandableListAdapter.setData(mGroupNameItem);
-            } else {
-                showToast();
-            }
-        });
+        //setting the adapter and Clicklistener
+        setterfunction(expandableListAdapter);
     }
 
     /**
-     * This method is used to add child items in list.
+     * For handling the child item in the list.
      *
-     * @param actualPosition position of group item
-     * @param clickedItem name of clicked item
+     * @param holder adapter holding the date of the list.
+     * @param text group/child text item to be displayed.
      */
-    private void addChildItems(int actualPosition, String clickedItem) {
-        String[] childItems = childItems().get(actualPosition);
-        int itemPositionFromGroup = mGroupNameItem.indexOf(clickedItem);
-        for (String item : childItems) {
-            itemPositionFromGroup = itemPositionFromGroup + 1;
-            mGroupNameItem.add(itemPositionFromGroup, item);
-            mTempChildNameItem.add(item);
-            mGroupImageItem.add(itemPositionFromGroup, ResourceTable.Media_star);
+    public void handleChildItem(ExpandableListAdapter.ViewHolder holder, ParentChild text) {
+        // Add child items to list
+        holder.makeInvisibleButton(ResourceTable.Id_checkbtn);
+        holder.setText(ResourceTable.Id_tvGroupTitle, text.getChildItem(), Color.GRAY,
+                ResUtil.getIntDimen(context, ResourceTable.Float_child_text_size));
+        //to add image only for the favourite items
+        if (mFavouriteItem.contains(text.getChildItem())) {
+            holder.setGroupImage(ResourceTable.Id_childstar, ResourceTable.Media_star,
+                    ShapeElement.OVAL, Image.ScaleMode.CENTER, ResourceTable.Color_white);
         }
     }
 
     /**
-     * This method is used to remove child item.
+     * for handling the clicked item.
      *
-     * @param position position of group item
-     * @param clickedItem name of the clicked item
+     * @param expandableListAdapter adapter holding the list data.
+     * @param position position of the clicked item.
      */
-    private void removeChildItems(int position, String clickedItem) {
-        String[] items = childItems().get(position);
-        int itemPositionFromGroup = mGroupNameItem.indexOf(clickedItem);
-        for (String name : items) {
-            mGroupNameItem.remove(itemPositionFromGroup + 1);
-            mGroupImageItem.remove(itemPositionFromGroup + 1);
-            mTempChildNameItem.remove(name);
+    public void handleClickedItem(ExpandableListAdapter<ParentChild> expandableListAdapter, int position) {
+        ParentChild value = mGroupNameItem.get(position);
+        String clickedItem = value.getChildItem();
+        if (!mTempChildNameItem.contains(clickedItem)) {
+            checkChild(position);
+            expandableListAdapter.setData(mGroupNameItem);
+        } else {
+            showToast();
         }
-    }
-
-    /**
-     * This method is used to prepare map based on group item index.
-     *
-     * @return HashMap
-     */
-    private HashMap<Integer, String[]> childItems() {
-        HashMap<Integer, String[]> map = new HashMap<>();
-        map.put(0, new String[]{
-                ResUtil.getString(context, ResourceTable.String_item_child_Rock1),
-                ResUtil.getString(context, ResourceTable.String_item_child_Rock2),
-                ResUtil.getString(context, ResourceTable.String_item_child_Rock3),
-                ResUtil.getString(context, ResourceTable.String_item_child_Rock4)});
-        map.put(1, new String[]{
-                ResUtil.getString(context, ResourceTable.String_item_child_Jazz1),
-                ResUtil.getString(context, ResourceTable.String_item_child_Jazz2),
-                ResUtil.getString(context, ResourceTable.String_item_child_Jazz3)});
-        map.put(2, new String[]{
-                ResUtil.getString(context, ResourceTable.String_item_child_Classic1),
-                ResUtil.getString(context, ResourceTable.String_item_child_Classic2),
-                ResUtil.getString(context, ResourceTable.String_item_child_Classic3),
-                ResUtil.getString(context, ResourceTable.String_item_child_Classic4)});
-        map.put(3, new String[]{
-                ResUtil.getString(context, ResourceTable.String_item_child_Salsa1),
-                ResUtil.getString(context, ResourceTable.String_item_child_Salsa2),
-                ResUtil.getString(context, ResourceTable.String_item_child_Salsa3),
-                ResUtil.getString(context, ResourceTable.String_item_child_Salsa4)});
-        map.put(4, new String[]{
-                ResUtil.getString(context, ResourceTable.String_item_child_Bluegrass1),
-                ResUtil.getString(context, ResourceTable.String_item_child_Bluegrass2),
-                ResUtil.getString(context, ResourceTable.String_item_child_Bluegrass3),
-                ResUtil.getString(context, ResourceTable.String_item_child_Bluegrass4)});
-        return map;
-    }
-
-    /**
-     * This method is used to show toast dialog based on the given message.
-     */
-    private void showToast() {
-        ToastDialog toastDialog = new ToastDialog(context);
-        toastDialog.setAlignment(TextAlignment.BOTTOM);
-        toastDialog.setText(ResUtil.getString(context, ResourceTable.String_clicked_on_child_item));
-        toastDialog.show();
-    }
-
-    /**
-     * This method is used to prepare the background shape element based on color.
-     *
-     * @param color color for the shape element
-     * @return ShapeElement
-     */
-    private ShapeElement getShapeElement(int color) {
-        ShapeElement shapeElement = new ShapeElement();
-        shapeElement.setShape(ShapeElement.RECTANGLE);
-        shapeElement.setRgbColor(RgbColor.fromArgbInt(color));
-        return shapeElement;
     }
 }

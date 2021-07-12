@@ -81,8 +81,8 @@ public abstract class ExpandableListAdapter<T> extends BaseItemProvider {
     }
 
     @Override
-    public Component getComponent(int position, Component convertComponent, ComponentContainer parent) {
-        convertComponent = new DirectionalLayout(mContext);
+    public Component getComponent(int position, Component tempComponent, ComponentContainer parent) {
+        Component convertComponent = new DirectionalLayout(mContext);
         ((DirectionalLayout) convertComponent).setOrientation(Component.HORIZONTAL);
         ComponentContainer.LayoutConfig layoutConfig = convertComponent.getLayoutConfig();
         layoutConfig.width = MATCH_PARENT;
@@ -122,7 +122,7 @@ public abstract class ExpandableListAdapter<T> extends BaseItemProvider {
     /**
      * creating the viewHolder and its method to set the attribute.
      */
-    protected static class ViewHolder {
+    public static class ViewHolder {
         HashMap<Integer, Component> mViews = new HashMap<>();
         Component itemView;
 
