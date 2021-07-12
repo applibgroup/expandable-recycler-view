@@ -27,7 +27,7 @@ dependencies {
 # Usage
 Let's say you are a rock star 🎸 and you want to build an app to show a list of your favorite Genres with a list of their top Artists.
 
-First create the Ability Slice and call the helper class by passing view and context as arguments and then call the `initViews` method of the helper class.
+First create the Ability Slice and call the respective controller class by passing view and context as arguments and then call the `initViews` method of that class.
 ``` java
 public class ExpandAbilitySlice extends AbilitySlice {
     @Override
@@ -36,26 +36,31 @@ public class ExpandAbilitySlice extends AbilitySlice {
         ComponentContainer rootView = (ComponentContainer) LayoutScatter.getInstance(this)
                 .parse(ResourceTable.Layout_ability_expandlist, null, false);
         super.setUIContent(rootView);
-        ExpandAbilityHelper helper = new ExpandAbilityHelper(this, rootView);
-        helper.initViews();
+        ExpandAbilityController controller = new ExpandAbilityController(this, rootView);
+        controller.initViews();
     }
 }
 ```
-Each helper class extends the common helper class. Inside the helper class, Initialize the view components by `initViews` method.
+Each controller class extends the common helper class. Inside the controller class, `initViews` method will call `initializeViews` method of the parent class to initialize the view components.
 ``` java
 public void initViews() {
-	tooglebtn = (Button) rootView.findComponentById(ResourceTable.Id_toogle);
-        getGroupItems();
+        super.initializeViews(ResourceTable.Id_root_expand, ResourceTable.Id_lcGroupItems_expand);
+        toggleBtn = (Button) rootView.findComponentById(ResourceTable.Id_toogle);
+        this.prepareExpandableListAdapter();
+}
+```
+```java
+protected void initializeViews(int rootViewId, int containerId) {
+	ScrollView parentLayout = (ScrollView) rootView.findComponentById(rootViewId);
+	parentLayout.setBackground(getShapeElement(ResUtil.getColor(context, ResourceTable.Color_white)));
+	mGroupContainer = (ExpandableListContainer) rootView.findComponentById(containerId);
+	getGroupItems();
         getGroupIcons();
-        ScrollView parentLayout = (ScrollView) rootView.findComponentById(ResourceTable.Id_root_expand);
-        parentLayout.setBackground(getShapeElement(ResUtil.getColor(context, ResourceTable.Color_white)));
-        mGroupContainer = (ExpandableListContainer) rootView.findComponentById(ResourceTable.Id_lcGroupItems_expand);
-        prepareExpandableListAdapter();
 }
 ```
 Then, Add all the Genre items in `mGroupNameItem` and their corresponding image in `mGroupImageItem `. We are maintaining a copy of the group items for finding the child items of each groups from a Hashmap by using their index value in `mFinalGroupNameItem` list.
 ``` java
-public void getGroupItems() {
+private void getGroupItems() {
         mGroupNameItem.add(new ParentChild(null, ResUtil.getString(context, ResourceTable.String_item_Rock)));
         mGroupNameItem.add(new ParentChild(null, ResUtil.getString(context, ResourceTable.String_item_Jazz)));
         mGroupNameItem.add(new ParentChild(null, ResUtil.getString(context, ResourceTable.String_item_Classic)));
@@ -69,7 +74,7 @@ public void getGroupItems() {
 }
 ```
 ``` java
-public void getGroupIcons() {
+private void getGroupIcons() {
 	mGroupImageItem.add(ResourceTable.Media_rock);
 	mGroupImageItem.add(ResourceTable.Media_jazz);
 	mGroupImageItem.add(ResourceTable.Media_classic);
@@ -77,19 +82,30 @@ public void getGroupIcons() {
 	mGroupImageItem.add(ResourceTable.Media_bluegrass);
 }
 ```
-Now the binding of the data to the view is done inside the `prepareExpandableListAdapter` method. Here, we will decide whether the item is a child or a group item by calling `handleListItem` and checking whether it is present in `mTempChildNameItem` or not.
+Now the binding of the data to the view is done inside the `prepareExpandableListAdapter` method. Here, we will decide whether the item is a child or a group item by calling `handleListItem` and checking whether it is present in `mTempChildNameItem` or not. After this, we will set the adapter and OnItemClicklistener.
 ``` java
- ExpandableListAdapter<ParentChild> expandableListAdapter = new ExpandableListAdapter<ParentChild>(context,
-	mGroupNameItem, mGroupImageItem, ResourceTable.Layout_ability_listview_item) {
-    @Override
-    protected void bind(ViewHolder holder, ParentChild text, Integer image, int position) {
-	handleListItem(holder, text, image);
-    }
-};
+protected void prepareExpandableListAdapter() {
+	expandableListAdapter = new ExpandableListAdapter<ParentChild>(context,
+		mGroupNameItem, mGroupImageItem, ResourceTable.Layout_ability_listview_item) {
+	    @Override
+	    protected void bind(ViewHolder holder, ParentChild text, Integer image, int position) {
+		handleListItem(holder, text, image);
+	    }
+	};
+	//setting the adapter
+	setAdapter(expandableListAdapter);
+	//setting the OnItemClickListener
+	setListener(expandableListAdapter);
+}
 ```
-If it is not present in `mTempChildNameItem`, then it is a parent/group item, otherwise it is a child item.
+```java
+private void setAdapter(ExpandableListAdapter<ParentChild> expandableListAdapter) {
+        mGroupContainer.setItemProvider(expandableListAdapter);
+    }
+```
+If the item is not present in `mTempChildNameItem`, then it is a parent/group item, otherwise it is a child item.
 ``` java
-public void handleListItem(ExpandableListAdapter.ViewHolder holder, ParentChild text, Integer image) {
+private void handleListItem(ExpandableListAdapter.ViewHolder holder, ParentChild text, Integer image) {
 	if (!mTempChildNameItem.contains(text.getChildItem())) {
 	    handleParentItem(holder, text, image);
 	} else {
@@ -98,7 +114,7 @@ public void handleListItem(ExpandableListAdapter.ViewHolder holder, ParentChild 
 }
 ```
 ```java
-public void handleParentItem(ExpandableListAdapter.ViewHolder holder, ParentChild text, Integer image) {
+private void handleParentItem(ExpandableListAdapter.ViewHolder holder, ParentChild text, Integer image) {
 	// Set background for parent/Group
 	holder.makeInvisibleButton(ResourceTable.Id_checkbtn);
 	holder.makeInvisibleImage(ResourceTable.Id_childstar);
@@ -118,8 +134,9 @@ public void handleParentItem(ExpandableListAdapter.ViewHolder holder, ParentChil
 	}
 }
 ```
+`handleChildItem` method will be different for different ability. For expand ability- 
 ```java
-public void handleChildItem(ExpandableListAdapter.ViewHolder holder, ParentChild text) {
+protected void handleChildItem(ExpandableListAdapter.ViewHolder holder, ParentChild text) {
         // Add child items to list
         holder.makeInvisibleButton(ResourceTable.Id_checkbtn);
         holder.makeInvisibleImage(ResourceTable.Id_ArrowIcon);
@@ -127,27 +144,41 @@ public void handleChildItem(ExpandableListAdapter.ViewHolder holder, ParentChild
                 ResUtil.getIntDimen(context, ResourceTable.Float_child_text_size));
 }
 ```
-Then we set the onItemClickListener and call the `handleClickedItem` method to check if the clickedItem is a Group item (i.e. Genre) or the Child item (i.e. Artist).
+Inside the `setOnItemClickListener`, we call the `handleClickedItem` method to check if the clickedItem is a Group item (i.e. Genre) or the Child item (i.e. Artist).
 ``` java
-expandableListAdapter.setOnItemClickListener((component, position) ->
-	handleClickedItem(expandableListAdapter, position));
+private void setListener(ExpandableListAdapter<ParentChild> expandableListAdapter) {
+        expandableListAdapter.setOnItemClickListener((component, position) ->
+                handleClickedItem(expandableListAdapter, position));
+}
 ```
 ``` java
-public void handleClickedItem(ExpandableListAdapter<ParentChild> expandableListAdapter, int position) {
-	ParentChild value = mGroupNameItem.get(position);
-	String clickedItem = value.getChildItem();
-	if (mTempChildNameItem.contains(clickedItem)) {
-	    showToast();
-	} else {
-	    checkChild(position);
-	    expandableListAdapter.setData(mGroupNameItem);
-	}
+protected void handleClickedItem(ExpandableListAdapter<ParentChild> expandableListAdapter, int position) {
+        ParentChild value = mGroupNameItem.get(position);
+        String clickedItem = value.getChildItem();
+        if (!mTempChildNameItem.contains(clickedItem)) {
+            handleClickedParentItem(expandableListAdapter, position);
+        } else {
+            handleClickedChildItem(expandableListAdapter, value);
+        }
+}
+```
+```java
+private void handleClickedParentItem(ExpandableListAdapter<ParentChild> expandableListAdapter, int position) {
+        checkChild(position);
+        expandableListAdapter.setData(mGroupNameItem);
+}
+```
+`handleClickedChildItem` method will be different for different ability slice. For expand ability- 
+```java
+@Override
+protected void handleClickedChildItem(ExpandableListAdapter<ParentChild> expandableListAdapter, ParentChild value) {
+        super.showToast();
 }
 ```
 `mTempGroupNameItem` contains all the Group item that are in expand state and `mTempChildNameItem` will contains child of such GroupItems.
 While collapsing the group, we will remove the group items from `mTempGroupNameItem` and their child items from `mTempChildNameItem`.
 ```java
-public void checkChild(int position) {
+private void checkChild(int position) {
         ParentChild value = mGroupNameItem.get(position);
         String clickedItem = value.getChildItem();
         if (mTempGroupNameItem.contains(clickedItem)) {
@@ -163,7 +194,7 @@ public void checkChild(int position) {
 ```
 If it is the Group item and it is not there in `mTempGroupNameItem`, that means we have to expand it and then add it to `mTempGroupNameItem` and their corresponding child items to `mTempChildNameItem`.
 ``` java
-public void addChildItems(int index, String clickedItem, int itemPositionFromGroup) {
+private void addChildItems(int index, String clickedItem, int itemPositionFromGroup) {
         String[] childItems = childItems().get(index);
         for (String item : childItems) {
             itemPositionFromGroup = itemPositionFromGroup + 1;
@@ -176,7 +207,7 @@ public void addChildItems(int index, String clickedItem, int itemPositionFromGro
 If the `clickedItem` is already there in `mTempGroupNameItem`, then we have to collapse it and then remove it from `mTempGroupNameItem` and the 
 corresponding child items from `mTempChildNameItem`.
 ``` java
-public void removeChildItems(int position, int itemPositionFromGroup) {
+private void removeChildItems(int position, int itemPositionFromGroup) {
         String[] items = childItems().get(position);
         for (String name : items) {
             mGroupNameItem.remove(itemPositionFromGroup + 1);
@@ -188,7 +219,7 @@ public void removeChildItems(int position, int itemPositionFromGroup) {
 ### FavouriteItems
 We can maintain our favorite child items, i.e. favourite Artists, by adding them to an ArrayList `mFavouriteItem`.
 ``` java
-public void getFavouriteItems() {
+protected void getFavouriteItems() {
         mFavouriteItem.add(ResUtil.getString(context, ResourceTable.String_item_child_Rock1));
         mFavouriteItem.add(ResUtil.getString(context, ResourceTable.String_item_child_Rock4));
         mFavouriteItem.add(ResUtil.getString(context, ResourceTable.String_item_child_Jazz1));
@@ -202,20 +233,15 @@ public void getFavouriteItems() {
 ### CheckableChildItems
 We are maintaining mSelectedChild, which is a HashMap, and will map the checked item to its parent item. We are updating this HashMap whenever any list item is getting clicked. 
 ``` java
-public void handleClickedItem(ExpandableListAdapter<ParentChild> expandableListAdapter, int position) {
-	ParentChild value = mGroupNameItem.get(position);
-	String clickedItem = value.getChildItem();
-	if (!mTempChildNameItem.contains(clickedItem)) {
-	    checkChild(position);
-	    expandableListAdapter.setData(mGroupNameItem);
-	} else {
-	    String parentGroup = value.getParentItem();
-	    if (mSelectedChild.containsKey(parentGroup)) {
-		mSelectedChild.remove(parentGroup);
-	    }
-	    mSelectedChild.put(parentGroup, clickedItem);
-	    expandableListAdapter.setData(mGroupNameItem);
-	}
+@Override
+protected void handleClickedChildItem(ExpandableListAdapter<ParentChild> expandableListAdapter, ParentChild value) {
+        String parentGroup = value.getParentItem();
+        String clickedItem = value.getChildItem();
+        if (mSelectedChild.containsKey(parentGroup)) {
+            mSelectedChild.remove(parentGroup);
+        }
+        mSelectedChild.put(parentGroup, clickedItem);
+        expandableListAdapter.setData(mGroupNameItem);
 }
 ```
 To handle the case where a child item can be under multiple groups, we have created a class `ParentChild` that will store both the parent and the child name for each of the list items. While rendering the view, we will check only those items whose parent child pair is present in `mSelectedChild` HashMap.

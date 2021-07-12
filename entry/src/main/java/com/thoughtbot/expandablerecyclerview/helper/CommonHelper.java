@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package com.thoughtbot.expandablerecyclerview.entities;
+package com.thoughtbot.expandablerecyclerview.helper;
 
 import ohos.agp.colors.RgbColor;
 import ohos.agp.components.ComponentContainer;
 import ohos.agp.components.Image;
+import ohos.agp.components.ScrollView;
 import ohos.agp.components.element.ShapeElement;
 import ohos.agp.utils.Color;
 import ohos.agp.utils.TextAlignment;
@@ -27,13 +28,14 @@ import ohos.app.Context;
 import com.thoughtbot.expandablerecyclerview.ExpandableListAdapter;
 import com.thoughtbot.expandablerecyclerview.ExpandableListContainer;
 import com.thoughtbot.expandablerecyclerview.ResourceTable;
+import com.thoughtbot.expandablerecyclerview.entities.ParentChild;
 import com.thoughtbot.expandablerecyclerview.util.ResUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Parent helper class for each Ability Helper.
+ * Parent helper class for each Controller.
  */
 public abstract class CommonHelper {
     protected ExpandableListContainer mGroupContainer;
@@ -43,13 +45,26 @@ public abstract class CommonHelper {
     protected ArrayList<String> mFinalGroupNameItem = new ArrayList<>();
     protected ArrayList<Integer> mGroupImageItem = new ArrayList<>();
     protected ArrayList<String> mFavouriteItem = new ArrayList<>();
+    protected ExpandableListAdapter<ParentChild> expandableListAdapter;
     protected Context context;
     protected ComponentContainer rootView;
 
     /**
+     * Initialize the view components.
+     */
+    protected void initializeViews(int rootViewId, int containerId) {
+        ScrollView parentLayout = (ScrollView) rootView.findComponentById(rootViewId);
+        parentLayout.setBackground(getShapeElement(ResUtil.getColor(context, ResourceTable.Color_white)));
+        mGroupContainer = (ExpandableListContainer) rootView.findComponentById(containerId);
+        getGroupItems();
+        getGroupIcons();
+
+    }
+
+    /**
      * This method is used to prepare group items.
      */
-    public void getGroupItems() {
+    private void getGroupItems() {
         mGroupNameItem.add(new ParentChild(null, ResUtil.getString(context, ResourceTable.String_item_Rock)));
         mGroupNameItem.add(new ParentChild(null, ResUtil.getString(context, ResourceTable.String_item_Jazz)));
         mGroupNameItem.add(new ParentChild(null, ResUtil.getString(context, ResourceTable.String_item_Classic)));
@@ -65,7 +80,7 @@ public abstract class CommonHelper {
     /**
      * This method is used to prepare group items images.
      */
-    public void getGroupIcons() {
+    private void getGroupIcons() {
         mGroupImageItem.add(ResourceTable.Media_rock);
         mGroupImageItem.add(ResourceTable.Media_jazz);
         mGroupImageItem.add(ResourceTable.Media_classic);
@@ -76,7 +91,7 @@ public abstract class CommonHelper {
     /**
      * This method is used to prepare Favourite child items.
      */
-    public void getFavouriteItems() {
+    protected void getFavouriteItems() {
         mFavouriteItem.add(ResUtil.getString(context, ResourceTable.String_item_child_Rock1));
         mFavouriteItem.add(ResUtil.getString(context, ResourceTable.String_item_child_Rock4));
         mFavouriteItem.add(ResUtil.getString(context, ResourceTable.String_item_child_Jazz1));
@@ -87,13 +102,39 @@ public abstract class CommonHelper {
     }
 
     /**
-     * for handling both parent and child item.
+     * This method is used to prepare list adapter for holding data.
+     */
+    protected void prepareExpandableListAdapter() {
+        expandableListAdapter = new ExpandableListAdapter<ParentChild>(context,
+                mGroupNameItem, mGroupImageItem, ResourceTable.Layout_ability_listview_item) {
+            @Override
+            protected void bind(ViewHolder holder, ParentChild text, Integer image, int position) {
+                handleListItem(holder, text, image);
+            }
+        };
+        //setting the adapter
+        setAdapter(expandableListAdapter);
+        //setting the OnItemClickListener
+        setListener(expandableListAdapter);
+    }
+
+    private void setAdapter(ExpandableListAdapter<ParentChild> expandableListAdapter) {
+        mGroupContainer.setItemProvider(expandableListAdapter);
+    }
+
+    private void setListener(ExpandableListAdapter<ParentChild> expandableListAdapter) {
+        expandableListAdapter.setOnItemClickListener((component, position) ->
+                handleClickedItem(expandableListAdapter, position));
+    }
+
+    /**
+     * for handling both parent and child item inside the bind method.
      *
      * @param holder holding the view.
      * @param text group/child text item to be displayed.
      * @param image group image to be displayed.
      */
-    public void handleListItem(ExpandableListAdapter.ViewHolder holder, ParentChild text, Integer image) {
+    private void handleListItem(ExpandableListAdapter.ViewHolder holder, ParentChild text, Integer image) {
         if (!mTempChildNameItem.contains(text.getChildItem())) {
             handleParentItem(holder, text, image);
         } else {
@@ -102,24 +143,13 @@ public abstract class CommonHelper {
     }
 
     /**
-     * for setting the adapter and OnItemClickListener.
-     *
-     * @param expandableListAdapter adpter for holding the list data.
-     */
-    public void setterfunction(ExpandableListAdapter<ParentChild> expandableListAdapter) {
-        mGroupContainer.setItemProvider(expandableListAdapter);
-        expandableListAdapter.setOnItemClickListener((component, position) ->
-                handleClickedItem(expandableListAdapter, position));
-    }
-
-    /**
-     * for rendering the parent/groupitem of the list.
+     * for rendering the parent/groupitem in the list.
      *
      * @param holder holding the view.
      * @param text group/child text item to be displayed.
      * @param image group image to be displayed.
      */
-    public void handleParentItem(ExpandableListAdapter.ViewHolder holder, ParentChild text, Integer image) {
+    private void handleParentItem(ExpandableListAdapter.ViewHolder holder, ParentChild text, Integer image) {
         // Set background for parent/Group
         holder.makeInvisibleButton(ResourceTable.Id_checkbtn);
         holder.makeInvisibleImage(ResourceTable.Id_childstar);
@@ -139,16 +169,50 @@ public abstract class CommonHelper {
         }
     }
 
-    public abstract void handleChildItem(ExpandableListAdapter.ViewHolder holder, ParentChild text);
+    /**
+     * For rendering the child item in the list.
+     *
+     * @param holder adapter for holding the list data.
+     * @param text group/child text item to be displayed.
+     */
+    protected abstract void handleChildItem(ExpandableListAdapter.ViewHolder holder, ParentChild text);
 
-    public abstract void handleClickedItem(ExpandableListAdapter<ParentChild> expandableListAdapter, int position);
+    /**
+     * to handle the clicked item.
+     *
+     * @param expandableListAdapter adapter holding the list data.
+     * @param position position of the clicked item.
+     */
+    protected void handleClickedItem(ExpandableListAdapter<ParentChild> expandableListAdapter, int position) {
+        ParentChild value = mGroupNameItem.get(position);
+        String clickedItem = value.getChildItem();
+        if (!mTempChildNameItem.contains(clickedItem)) {
+            handleClickedParentItem(expandableListAdapter, position);
+        } else {
+            handleClickedChildItem(expandableListAdapter, value);
+        }
+    }
+
+    private void handleClickedParentItem(ExpandableListAdapter<ParentChild> expandableListAdapter, int position) {
+        checkChild(position);
+        expandableListAdapter.setData(mGroupNameItem);
+    }
+
+    /**
+     * to handle the clicked child item.
+     *
+     * @param expandableListAdapter adapter holding the list data.
+     * @param value the value of the clicked item
+     */
+    protected abstract void handleClickedChildItem(ExpandableListAdapter<ParentChild> expandableListAdapter,
+                                                   ParentChild value);
 
     /**
      * To check whether the child is to be added or removed.
      *
      * @param position its position in the mGroupNameItem list
      */
-    public void checkChild(int position) {
+    private void checkChild(int position) {
         ParentChild value = mGroupNameItem.get(position);
         String clickedItem = value.getChildItem();
         if (mTempGroupNameItem.contains(clickedItem)) {
@@ -169,7 +233,7 @@ public abstract class CommonHelper {
      * @param clickedItem name of clicked/group item.
      * @param itemPositionFromGroup positon after which child item is to be added.
      */
-    public void addChildItems(int index, String clickedItem, int itemPositionFromGroup) {
+    private void addChildItems(int index, String clickedItem, int itemPositionFromGroup) {
         String[] childItems = childItems().get(index);
         for (String item : childItems) {
             itemPositionFromGroup = itemPositionFromGroup + 1;
@@ -185,7 +249,7 @@ public abstract class CommonHelper {
      * @param position position of group item.
      * @param itemPositionFromGroup positon after which child item is to be removed.
      */
-    public void removeChildItems(int position, int itemPositionFromGroup) {
+    private void removeChildItems(int position, int itemPositionFromGroup) {
         String[] items = childItems().get(position);
         for (String name : items) {
             mGroupNameItem.remove(itemPositionFromGroup + 1);
@@ -199,7 +263,7 @@ public abstract class CommonHelper {
      *
      * @return Map
      */
-    public Map<Integer, String[]> childItems() {
+    private Map<Integer, String[]> childItems() {
         HashMap<Integer, String[]> map = new HashMap<>();
         map.put(0, new String[]{
                 ResUtil.getString(context, ResourceTable.String_item_child_Rock1),
@@ -231,7 +295,7 @@ public abstract class CommonHelper {
     /**
      * This method is used to show toast dialog based on the child Item.
      */
-    public void showToast() {
+    protected void showToast() {
         ToastDialog toastDialog = new ToastDialog(context);
         toastDialog.setAlignment(TextAlignment.BOTTOM);
         toastDialog.setText(ResUtil.getString(context, ResourceTable.String_clicked_on_child_item));
@@ -244,7 +308,7 @@ public abstract class CommonHelper {
      * @param color color for the shape element.
      * @return ShapeElement.
      */
-    public ShapeElement getShapeElement(int color) {
+    private ShapeElement getShapeElement(int color) {
         ShapeElement shapeElement = new ShapeElement();
         shapeElement.setShape(ShapeElement.RECTANGLE);
         shapeElement.setRgbColor(RgbColor.fromArgbInt(color));

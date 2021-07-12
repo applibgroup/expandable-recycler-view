@@ -21,7 +21,7 @@ import ohos.aafwk.content.Intent;
 import ohos.agp.components.ComponentContainer;
 import ohos.agp.components.LayoutScatter;
 import com.thoughtbot.expandablerecyclerview.ResourceTable;
-import com.thoughtbot.expandablerecyclerview.multicheck.MultiCheckHelper;
+import com.thoughtbot.expandablerecyclerview.multicheck.MultiCheckController;
 
 /**
  * Multi Check Ability Slice.
@@ -34,7 +34,7 @@ public class MultiCheckAbilitySlice extends AbilitySlice {
         ComponentContainer rootView = (ComponentContainer) LayoutScatter.getInstance(this)
                 .parse(ResourceTable.Layout_ability_multicheck, null, false);
         super.setUIContent(rootView);
-        MultiCheckHelper helper = new MultiCheckHelper(this, rootView);
-        helper.initViews();
+        MultiCheckController controller = new MultiCheckController(this, rootView);
+        controller.initViews();
     }
 }

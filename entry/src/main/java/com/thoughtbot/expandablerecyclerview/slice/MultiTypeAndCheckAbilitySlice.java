@@ -21,7 +21,7 @@ import ohos.aafwk.content.Intent;
 import ohos.agp.components.ComponentContainer;
 import ohos.agp.components.LayoutScatter;
 import com.thoughtbot.expandablerecyclerview.ResourceTable;
-import com.thoughtbot.expandablerecyclerview.multitypeandcheck.MultiTypeAndCheckHelper;
+import com.thoughtbot.expandablerecyclerview.multitypeandcheck.MultiTypeAndCheckController;
 
 /**
  * Multi type and Check Ability.
@@ -34,7 +34,7 @@ public class MultiTypeAndCheckAbilitySlice extends AbilitySlice {
         ComponentContainer rootView = (ComponentContainer) LayoutScatter.getInstance(this)
                 .parse(ResourceTable.Layout_ability_singlecheck, null, false);
         super.setUIContent(rootView);
-        MultiTypeAndCheckHelper helper = new MultiTypeAndCheckHelper(this, rootView);
-        helper.initViews();
+        MultiTypeAndCheckController controller = new MultiTypeAndCheckController(this, rootView);
+        controller.initViews();
     }
 }

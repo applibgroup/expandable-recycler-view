@@ -21,7 +21,7 @@ import ohos.aafwk.content.Intent;
 import ohos.agp.components.ComponentContainer;
 import ohos.agp.components.LayoutScatter;
 import com.thoughtbot.expandablerecyclerview.ResourceTable;
-import com.thoughtbot.expandablerecyclerview.singlecheck.SingleCheckHelper;
+import com.thoughtbot.expandablerecyclerview.singlecheck.SingleCheckController;
 
 /**
  * Single Check Abilty Slice.
@@ -34,7 +34,7 @@ public class SingleCheckAbilitySlice extends AbilitySlice {
         ComponentContainer rootView = (ComponentContainer) LayoutScatter.getInstance(this)
                 .parse(ResourceTable.Layout_ability_singlecheck, null, false);
         super.setUIContent(rootView);
-        SingleCheckHelper helper = new SingleCheckHelper(this, rootView);
-        helper.initViews();
+        SingleCheckController controller = new SingleCheckController(this, rootView);
+        controller.initViews();
     }
 }
