@@ -28,7 +28,7 @@ import com.thoughtbot.expandablerecyclerview.util.ResUtil;
 import java.util.HashMap;
 
 /**
- * Helper class for SingleCheckAbilitySlice.
+ * Controller class for SingleCheckAbilitySlice.
  */
 public class SingleCheckController extends CommonHelper {
     private HashMap<String, String> mSelectedChild = new HashMap<>();

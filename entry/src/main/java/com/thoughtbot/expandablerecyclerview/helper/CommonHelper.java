@@ -35,7 +35,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Parent helper class for each Controller.
+ * Common helper class for each Controller.
  */
 public abstract class CommonHelper {
     protected ExpandableListContainer mGroupContainer;
@@ -58,7 +58,6 @@ public abstract class CommonHelper {
         mGroupContainer = (ExpandableListContainer) rootView.findComponentById(containerId);
         getGroupItems();
         getGroupIcons();
-
     }
 
     /**

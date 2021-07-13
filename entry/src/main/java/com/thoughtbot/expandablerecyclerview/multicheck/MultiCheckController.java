@@ -30,7 +30,7 @@ import com.thoughtbot.expandablerecyclerview.util.ResUtil;
 import java.util.ArrayList;
 
 /**
- * Helper class for MultiCheckAbilitySlice.
+ * Controller class for MultiCheckAbilitySlice.
  */
 public class MultiCheckController extends CommonHelper {
     private ArrayList<ParentChild> mSelectedChild = new ArrayList<>();

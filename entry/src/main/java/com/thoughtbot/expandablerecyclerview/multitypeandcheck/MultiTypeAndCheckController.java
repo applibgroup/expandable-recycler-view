@@ -28,7 +28,7 @@ import com.thoughtbot.expandablerecyclerview.util.ResUtil;
 import java.util.HashMap;
 
 /**
- * Helper class for MultiTypeAndCheckAbilitySlice.
+ * Controller class for MultiTypeAndCheckAbilitySlice.
  */
 public class MultiTypeAndCheckController extends CommonHelper {
     private HashMap<String, String> mSelectedChild = new HashMap<>();

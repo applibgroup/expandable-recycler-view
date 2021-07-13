@@ -28,7 +28,7 @@ import com.thoughtbot.expandablerecyclerview.helper.CommonHelper;
 import com.thoughtbot.expandablerecyclerview.util.ResUtil;
 
 /**
- * Helper class for MultiTypeAbilitySlice.
+ * Controler class for MultiTypeAbilitySlice.
  */
 public class MultiTypeController extends CommonHelper {
     public MultiTypeController(Context context, ComponentContainer rootView) {
@@ -51,7 +51,7 @@ public class MultiTypeController extends CommonHelper {
         holder.makeInvisibleButton(ResourceTable.Id_checkbtn);
         holder.setText(ResourceTable.Id_tvGroupTitle, text.getChildItem(), Color.GRAY,
                 ResUtil.getIntDimen(context, ResourceTable.Float_child_text_size));
-        //to add image only for the favourite items
+        //to add star image only for the favourite items
         if (mFavouriteItem.contains(text.getChildItem())) {
             holder.setGroupImage(ResourceTable.Id_childstar, ResourceTable.Media_star,
                     ShapeElement.OVAL, Image.ScaleMode.CENTER, ResourceTable.Color_white);

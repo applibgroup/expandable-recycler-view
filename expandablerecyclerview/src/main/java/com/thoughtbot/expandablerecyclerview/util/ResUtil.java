@@ -15,6 +15,9 @@ import java.util.Optional;
  * A class to get different types of values.
  */
 public class ResUtil {
+    private static final String LABEL = "ResUtil";
+    private static final String MESSAGE = "IOException | NotExistException | WrongTypeException";
+
     private ResUtil() {
     }
 
@@ -37,7 +40,7 @@ public class ResUtil {
         try {
             path = manager.getMediaPath(id);
         } catch (IOException | NotExistException | WrongTypeException e) {
-            e.printStackTrace();
+            LogUtil.error(LABEL, "abc");
         }
         return path;
     }
@@ -61,7 +64,7 @@ public class ResUtil {
         try {
             result = manager.getElement(id).getColor();
         } catch (IOException | NotExistException | WrongTypeException e) {
-            e.printStackTrace();
+            LogUtil.error(LABEL, MESSAGE);
         }
         return result;
     }
@@ -85,7 +88,7 @@ public class ResUtil {
         try {
             result = manager.getElement(id).getFloat();
         } catch (IOException | NotExistException | WrongTypeException e) {
-            e.printStackTrace();
+            LogUtil.error(LABEL, MESSAGE);
         }
         return result;
     }
@@ -121,7 +124,7 @@ public class ResUtil {
         try {
             result = manager.getElement(id).getString();
         } catch (IOException | NotExistException | WrongTypeException e) {
-            e.printStackTrace();
+            LogUtil.error(LABEL, MESSAGE);
         }
         return result;
     }
@@ -147,7 +150,7 @@ public class ResUtil {
             ImageSource source = ImageSource.create(asset, options);
             return Optional.ofNullable(source.createPixelmap(decodingOptions));
         } catch (IOException e) {
-            e.printStackTrace();
+            LogUtil.error(LABEL, "IOException");
         }
         return Optional.empty();
     }

@@ -33,7 +33,6 @@ public class ExpandableListAdapterTest {
 
     @Test
     public void testgetCountwithNull(){
-        
         names= new ArrayList<>();
         items= new ExpandableListAdapter<String >(context, names, images, mLayoutId) {
             @Override

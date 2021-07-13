@@ -27,7 +27,7 @@ import com.thoughtbot.expandablerecyclerview.helper.CommonHelper;
 import com.thoughtbot.expandablerecyclerview.util.ResUtil;
 
 /**
- * Helper class for ExpandAbilitySlice.
+ * Controller class for ExpandAbilitySlice.
  */
 public class ExpandAbilityController extends CommonHelper {
     private Button toggleBtn;

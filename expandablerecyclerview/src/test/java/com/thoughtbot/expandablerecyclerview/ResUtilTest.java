@@ -24,6 +24,7 @@ import ohos.global.resource.NotExistException;
 import ohos.global.resource.ResourceManager;
 import ohos.global.resource.WrongTypeException;
 import ohos.media.image.PixelMap;
+import com.thoughtbot.expandablerecyclerview.util.LogUtil;
 import com.thoughtbot.expandablerecyclerview.util.ResUtil;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.junit.Test;
@@ -45,6 +46,9 @@ public class ResUtilTest {
     @Mock
     Element element;
 
+    private static final String LABEL = "ResUtilTest";
+    private static final String MESSAGE = "IOException | NotExistException | WrongTypeException";
+
     @Test
     public void testgetPathWithContextNUll() {
         String res= ResUtil.getPathById(null,0);
@@ -60,13 +64,12 @@ public class ResUtilTest {
 
     @Test
     public void testgetPathForVerify() {
-
         when(context.getResourceManager()).thenReturn(resourceManager);
         ResUtil.getPathById(context,0);
         try {
             verify(resourceManager,atLeastOnce()).getMediaPath(0);
         } catch (IOException | NotExistException | WrongTypeException e) {
-            e.printStackTrace();
+            LogUtil.error(LABEL, MESSAGE);
         }
     }
 
@@ -83,7 +86,6 @@ public class ResUtilTest {
         assertEquals(0,res);
     }
 
-
     @Test
     public void testgetColorForVerify() {
         when(context.getResourceManager()).thenReturn(resourceManager);
@@ -93,11 +95,10 @@ public class ResUtilTest {
             verify(resourceManager,atLeastOnce()).getElement(0);
             verify(element,atLeastOnce()).getColor();
         } catch (IOException | NotExistException | WrongTypeException e) {
-            e.printStackTrace();
+            LogUtil.error(LABEL, MESSAGE);
         }
     }
-
-
+    
     @Test
     public void testgetDimenWithContextNUll() {
         float res= ResUtil.getDimen(null,0);
@@ -120,7 +121,7 @@ public class ResUtilTest {
             verify(resourceManager,atLeastOnce()).getElement(0);
             verify(element,atLeastOnce()).getFloat();
         } catch (IOException | NotExistException | WrongTypeException e) {
-            e.printStackTrace();
+            LogUtil.error(LABEL, MESSAGE);
         }
     }
 
@@ -131,7 +132,7 @@ public class ResUtilTest {
             when(resourceManager.getElement(0)).thenReturn(element);
             when(element.getFloat()).thenReturn((float)0.4);
         } catch (IOException | NotExistException | WrongTypeException e) {
-            e.printStackTrace();
+            LogUtil.error(LABEL, MESSAGE);
         }
         int res= ResUtil.getIntDimen(context,0);
         assertEquals(0,res);
@@ -144,7 +145,7 @@ public class ResUtilTest {
             when(resourceManager.getElement(0)).thenReturn(element);
             when(element.getFloat()).thenReturn((float)1.6);
         } catch (IOException | NotExistException | WrongTypeException e) {
-            e.printStackTrace();
+            LogUtil.error(LABEL, MESSAGE);
         }
         int res= ResUtil.getIntDimen(context,0);
         assertEquals(2,res);
@@ -172,7 +173,7 @@ public class ResUtilTest {
             verify(resourceManager,atLeastOnce()).getElement(0);
             verify(element,atLeastOnce()).getString();
         } catch (IOException | NotExistException | WrongTypeException e) {
-            e.printStackTrace();
+            LogUtil.error(LABEL, MESSAGE);
         }
     }
 
@@ -187,5 +188,4 @@ public class ResUtilTest {
         ResUtil.getPixelMap(context,0);
         verify(context, atLeastOnce()).getResourceManager();
     }
-
 }
