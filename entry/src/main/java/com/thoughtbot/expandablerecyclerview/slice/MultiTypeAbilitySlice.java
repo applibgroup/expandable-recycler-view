@@ -5,7 +5,7 @@ import ohos.aafwk.content.Intent;
 import ohos.agp.components.ComponentContainer;
 import ohos.agp.components.LayoutScatter;
 import com.thoughtbot.expandablerecyclerview.ResourceTable;
-import com.thoughtbot.expandablerecyclerview.multitype.MultiTypeHelper;
+import com.thoughtbot.expandablerecyclerview.multitype.MultiTypeController;
 
 /**
  * Multi Type Ability Slice.
@@ -18,7 +18,7 @@ public class MultiTypeAbilitySlice extends AbilitySlice {
         ComponentContainer rootView = (ComponentContainer) LayoutScatter.getInstance(this)
                 .parse(ResourceTable.Layout_ability_multitype_list, null, false);
         super.setUIContent(rootView);
-        MultiTypeHelper helper = new MultiTypeHelper(this, rootView);
-        helper.initViews();
+        MultiTypeController controller = new MultiTypeController(this, rootView);
+        controller.initViews();
     }
 }

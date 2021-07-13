@@ -23,19 +23,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ExpandableListAdapterTest {
-    public Context context;
-    public List<String> names;
-    public List<Integer> images;
-    public int mLayoutId;
-    public ExpandableListAdapter items;
+    private Context context;
+    private List<String> names;
+    private List<Integer> images;
+    private int mLayoutId;
+    private ExpandableListAdapter items;
+    private static final String ITEM_1 = "Item1";
+    private static final String ITEM_2 = "Item2";
 
     @Test
     public void testgetCountwithNull(){
-        
         names= new ArrayList<>();
         items= new ExpandableListAdapter<String >(context, names, images, mLayoutId) {
             @Override
             protected void bind(ViewHolder holder, String s, Integer image, int position) {
+                //not needed for testing
             }
         };
         int res= items.getCount();
@@ -45,11 +47,12 @@ public class ExpandableListAdapterTest {
     @Test
     public void testgetCount(){
         names= new ArrayList<>();
-        names.add("Item1");
-        names.add("Item2");
+        names.add(ITEM_1);
+        names.add(ITEM_2);
         items= new ExpandableListAdapter<String >(context, names, images, mLayoutId) {
             @Override
             protected void bind(ViewHolder holder, String s, Integer image, int position) {
+                //not needed for testing
             }
         };
         int res= items.getCount();
@@ -62,6 +65,7 @@ public class ExpandableListAdapterTest {
         items= new ExpandableListAdapter<String >(context, names, images, mLayoutId) {
             @Override
             protected void bind(ViewHolder holder, String s, Integer image, int position) {
+                //not needed for testing
             }
         };
         String res= (String) items.getItem(5);
@@ -71,25 +75,27 @@ public class ExpandableListAdapterTest {
     @Test
     public void testgetItem(){
         names= new ArrayList<>();
-        names.add("Item1");
-        names.add("Item2");
+        names.add(ITEM_1);
+        names.add(ITEM_2);
         items= new ExpandableListAdapter<String >(context, names, images, mLayoutId) {
             @Override
             protected void bind(ViewHolder holder, String s, Integer image, int position) {
+                //not needed for testing
             }
         };
         String res= (String) items.getItem(0);
-        assertEquals("Item1",res);
+        assertEquals(ITEM_1,res);
     }
 
     @Test
     public void testgetItemWithOutOfBound(){
         names= new ArrayList<>();
-        names.add("Item1");
-        names.add("Item2");
+        names.add(ITEM_1);
+        names.add(ITEM_2);
         items= new ExpandableListAdapter<String >(context, names, images, mLayoutId) {
             @Override
             protected void bind(ViewHolder holder, String s, Integer image, int position) {
+                //not needed for testing
             }
         };
         String res= (String) items.getItem(5);

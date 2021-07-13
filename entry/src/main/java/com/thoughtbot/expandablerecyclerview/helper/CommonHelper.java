@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package com.thoughtbot.expandablerecyclerview.multitypeandcheck;
+package com.thoughtbot.expandablerecyclerview.helper;
 
 import ohos.agp.colors.RgbColor;
-import ohos.agp.components.Button;
 import ohos.agp.components.ComponentContainer;
 import ohos.agp.components.Image;
 import ohos.agp.components.ScrollView;
@@ -33,41 +32,32 @@ import com.thoughtbot.expandablerecyclerview.entities.ParentChild;
 import com.thoughtbot.expandablerecyclerview.util.ResUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Helper class for MultiTypeAndCheckAbilitySlice.
+ * Common helper class for each Controller.
  */
-public class MultiTypeAndCheckHelper {
-    private ExpandableListContainer mGroupContainer;
-    private ArrayList<ParentChild> mGroupNameItem = new ArrayList<>();
-    private ArrayList<String> mTempGroupNameItem = new ArrayList<>();
-    private ArrayList<String> mTempChildNameItem = new ArrayList<>();
-    private ArrayList<String> mFinalGroupNameItem = new ArrayList<>();
-    private ArrayList<Integer> mGroupImageItem = new ArrayList<>();
-    private ArrayList<String> mFavouriteItem = new ArrayList<>();
-    private HashMap<String, String> mSelectedChild = new HashMap<>();
-    private Button clearbtn;
-    private Context context;
-    private ComponentContainer rootView;
-
-    public MultiTypeAndCheckHelper(Context context, ComponentContainer rootView) {
-        this.context = context;
-        this.rootView = rootView;
-    }
+public abstract class CommonHelper {
+    protected ExpandableListContainer mGroupContainer;
+    protected ArrayList<ParentChild> mGroupNameItem = new ArrayList<>();
+    protected ArrayList<String> mTempGroupNameItem = new ArrayList<>();
+    protected ArrayList<String> mTempChildNameItem = new ArrayList<>();
+    protected ArrayList<String> mFinalGroupNameItem = new ArrayList<>();
+    protected ArrayList<Integer> mGroupImageItem = new ArrayList<>();
+    protected ArrayList<String> mFavouriteItem = new ArrayList<>();
+    protected ExpandableListAdapter<ParentChild> expandableListAdapter;
+    protected Context context;
+    protected ComponentContainer rootView;
 
     /**
-     * This method is used to init view components.
+     * Initialize the view components.
      */
-    public void initViews() {
+    protected void initializeViews(int rootViewId, int containerId) {
+        ScrollView parentLayout = (ScrollView) rootView.findComponentById(rootViewId);
+        parentLayout.setBackground(getShapeElement(ResUtil.getColor(context, ResourceTable.Color_white)));
+        mGroupContainer = (ExpandableListContainer) rootView.findComponentById(containerId);
         getGroupItems();
         getGroupIcons();
-        getFavouriteItems();
-        clearbtn = (Button) rootView.findComponentById(ResourceTable.Id_clearbtn);
-        ScrollView parentLayout = (ScrollView) rootView.findComponentById(ResourceTable.Id_root_singlecheck);
-        parentLayout.setBackground(getShapeElement(ResUtil.getColor(context, ResourceTable.Color_white)));
-        mGroupContainer = (ExpandableListContainer)
-                rootView.findComponentById(ResourceTable.Id_lcGroupItems_singlecheck);
-        prepareExpandableListAdapter();
     }
 
     /**
@@ -100,7 +90,7 @@ public class MultiTypeAndCheckHelper {
     /**
      * This method is used to prepare Favourite child items.
      */
-    private void getFavouriteItems() {
+    protected void getFavouriteItems() {
         mFavouriteItem.add(ResUtil.getString(context, ResourceTable.String_item_child_Rock1));
         mFavouriteItem.add(ResUtil.getString(context, ResourceTable.String_item_child_Rock4));
         mFavouriteItem.add(ResUtil.getString(context, ResourceTable.String_item_child_Jazz1));
@@ -111,95 +101,139 @@ public class MultiTypeAndCheckHelper {
     }
 
     /**
-     * This method is used to prepare adapter for list data.
+     * This method is used to prepare list adapter for holding data.
      */
-    private void prepareExpandableListAdapter() {
-        ExpandableListAdapter<ParentChild> expandableListAdapter = new ExpandableListAdapter<ParentChild>(context,
+    protected void prepareExpandableListAdapter() {
+        expandableListAdapter = new ExpandableListAdapter<ParentChild>(context,
                 mGroupNameItem, mGroupImageItem, ResourceTable.Layout_ability_listview_item) {
             @Override
             protected void bind(ViewHolder holder, ParentChild text, Integer image, int position) {
-                if (!mTempChildNameItem.contains(text.getChildItem())) {
-                    // Set green background for parent/Group
-                    holder.makeInvisibleButton(ResourceTable.Id_checkbtn);
-                    holder.setGroupItemBackground(ResourceTable.Id_groupContainer, ResourceTable.Color_white);
-                    holder.setText(ResourceTable.Id_tvGroupTitle, text.getChildItem(), Color.GRAY,
-                            ResUtil.getIntDimen(context, ResourceTable.Float_group_text_size));
-                    holder.setGroupImage(ResourceTable.Id_ivGroupIcon, image, ShapeElement.RECTANGLE,
-                            Image.ScaleMode.STRETCH, ResourceTable.Color_white);
-                    if (!mTempGroupNameItem.contains(text.getChildItem())) {
-                        // Set divider & arrow down icon
-                        holder.setGroupImage(ResourceTable.Id_ArrowIcon, ResourceTable.Media_arrow_Down,
-                                ShapeElement.OVAL, Image.ScaleMode.CENTER, ResourceTable.Color_white);
-                    } else {
-                        // Remove divider & arrow up icon
-                        holder.setGroupImage(ResourceTable.Id_ArrowIcon, ResourceTable.Media_arrow_Up,
-                                ShapeElement.OVAL, Image.ScaleMode.CENTER, ResourceTable.Color_white);
-                    }
-                } else {
-                    // Add child items to list
-                    holder.makeInvisibleImage(ResourceTable.Id_ArrowIcon);
-                    if (mFavouriteItem.contains(text.getChildItem())) {
-                        holder.setText(ResourceTable.Id_tvGroupTitle, text.getChildItem(), Color.BLACK,
-                                ResUtil.getIntDimen(context, ResourceTable.Float_child_text_size));
-                        if (mSelectedChild.containsKey(text.getParentItem()) && mSelectedChild
-                                .get(text.getParentItem()).equals(text.getChildItem())) {
-                            holder.setChecked(ResourceTable.Id_checkbtn);
-                        } else {
-                            holder.setUnChecked(ResourceTable.Id_checkbtn);
-                        }
-                    } else {
-                        holder.setText(ResourceTable.Id_tvGroupTitle, text.getChildItem(), Color.GRAY,
-                                ResUtil.getIntDimen(context, ResourceTable.Float_child_text_size));
-                        holder.makeInvisibleButton(ResourceTable.Id_checkbtn);
-                    }
-                }
+                handleListItem(holder, text, image);
             }
         };
+        //setting the adapter
+        setAdapter(expandableListAdapter);
+        //setting the OnItemClickListener
+        setListener(expandableListAdapter);
+    }
+
+    private void setAdapter(ExpandableListAdapter<ParentChild> expandableListAdapter) {
         mGroupContainer.setItemProvider(expandableListAdapter);
+    }
 
-        expandableListAdapter.setOnItemClickListener((component, position) -> {
-            ParentChild value = mGroupNameItem.get(position);
-            String clickedItem = value.getChildItem();
-            if (!mTempChildNameItem.contains(clickedItem)) {
-                if (mTempGroupNameItem.contains(clickedItem)) {
-                    int actualItemPosition = mFinalGroupNameItem.indexOf(clickedItem);
-                    removeChildItems(actualItemPosition, position);
-                    mTempGroupNameItem.remove(clickedItem);
-                } else {
-                    int actualItemPosition = mFinalGroupNameItem.indexOf(clickedItem);
-                    addChildItems(actualItemPosition, clickedItem, position);
-                    mTempGroupNameItem.add(clickedItem);
-                }
-                expandableListAdapter.setData(mGroupNameItem);
-            } else {
-                if (mFavouriteItem.contains(clickedItem)) {
-                    String parentGroup = value.getParentItem();
-                    if (mSelectedChild.containsKey(parentGroup)) {
-                        mSelectedChild.remove(parentGroup);
-                    }
-                    mSelectedChild.put(parentGroup, clickedItem);
-                    expandableListAdapter.setData(mGroupNameItem);
-                } else {
-                    showToast();
-                }
-            }
-        });
+    private void setListener(ExpandableListAdapter<ParentChild> expandableListAdapter) {
+        expandableListAdapter.setOnItemClickListener((component, position) ->
+                handleClickedItem(expandableListAdapter, position));
+    }
 
-        //To clear the all the selected items.
-        clearbtn.setClickedListener(component -> {
-            mSelectedChild.clear();
-            expandableListAdapter.setData(mGroupNameItem);
-        });
+    /**
+     * for handling both parent and child item inside the bind method.
+     *
+     * @param holder holding the view.
+     * @param text group/child text item to be displayed.
+     * @param image group image to be displayed.
+     */
+    private void handleListItem(ExpandableListAdapter.ViewHolder holder, ParentChild text, Integer image) {
+        if (!mTempChildNameItem.contains(text.getChildItem())) {
+            handleParentItem(holder, text, image);
+        } else {
+            handleChildItem(holder, text);
+        }
+    }
+
+    /**
+     * for rendering the parent/groupitem in the list.
+     *
+     * @param holder holding the view.
+     * @param text group/child text item to be displayed.
+     * @param image group image to be displayed.
+     */
+    private void handleParentItem(ExpandableListAdapter.ViewHolder holder, ParentChild text, Integer image) {
+        // Set background for parent/Group
+        holder.makeInvisibleButton(ResourceTable.Id_checkbtn);
+        holder.makeInvisibleImage(ResourceTable.Id_childstar);
+        holder.setGroupItemBackground(ResourceTable.Id_groupContainer, ResourceTable.Color_white);
+        holder.setText(ResourceTable.Id_tvGroupTitle, text.getChildItem(), Color.GRAY,
+                ResUtil.getIntDimen(context, ResourceTable.Float_group_text_size));
+        holder.setGroupImage(ResourceTable.Id_ivGroupIcon, image,
+                ShapeElement.RECTANGLE, Image.ScaleMode.STRETCH, ResourceTable.Color_white);
+        if (!mTempGroupNameItem.contains(text.getChildItem())) {
+            // Set arrow down icon
+            holder.setGroupImage(ResourceTable.Id_ArrowIcon, ResourceTable.Media_arrow_Down,
+                    ShapeElement.OVAL, Image.ScaleMode.CENTER, ResourceTable.Color_white);
+        } else {
+            // Set arrow up icon
+            holder.setGroupImage(ResourceTable.Id_ArrowIcon, ResourceTable.Media_arrow_Up,
+                    ShapeElement.OVAL, Image.ScaleMode.CENTER, ResourceTable.Color_white);
+        }
+    }
+
+    /**
+     * For rendering the child item in the list.
+     *
+     * @param holder adapter for holding the list data.
+     * @param text group/child text item to be displayed.
+     */
+    protected abstract void handleChildItem(ExpandableListAdapter.ViewHolder holder, ParentChild text);
+
+    /**
+     * to handle the clicked item.
+     *
+     * @param expandableListAdapter adapter holding the list data.
+     * @param position position of the clicked item.
+     */
+    protected void handleClickedItem(ExpandableListAdapter<ParentChild> expandableListAdapter, int position) {
+        ParentChild value = mGroupNameItem.get(position);
+        String clickedItem = value.getChildItem();
+        if (!mTempChildNameItem.contains(clickedItem)) {
+            handleClickedParentItem(expandableListAdapter, position);
+        } else {
+            handleClickedChildItem(expandableListAdapter, value);
+        }
+    }
+
+    private void handleClickedParentItem(ExpandableListAdapter<ParentChild> expandableListAdapter, int position) {
+        checkChild(position);
+        expandableListAdapter.setData(mGroupNameItem);
+    }
+
+    /**
+     * to handle the clicked child item.
+     *
+     * @param expandableListAdapter adapter holding the list data.
+     * @param value the value of the clicked item
+     */
+    protected abstract void handleClickedChildItem(ExpandableListAdapter<ParentChild> expandableListAdapter,
+                                                   ParentChild value);
+
+    /**
+     * To check whether the child is to be added or removed.
+     *
+     * @param position its position in the mGroupNameItem list
+     */
+    private void checkChild(int position) {
+        ParentChild value = mGroupNameItem.get(position);
+        String clickedItem = value.getChildItem();
+        if (mTempGroupNameItem.contains(clickedItem)) {
+            int actualItemPosition = mFinalGroupNameItem.indexOf(clickedItem);
+            removeChildItems(actualItemPosition, position);
+            mTempGroupNameItem.remove(clickedItem);
+        } else {
+            int actualItemPosition = mFinalGroupNameItem.indexOf(clickedItem);
+            addChildItems(actualItemPosition, clickedItem, position);
+            mTempGroupNameItem.add(clickedItem);
+        }
     }
 
     /**
      * This method is used to add child items in list.
      *
-     * @param actualPosition position of group item
-     * @param clickedItem name of clicked item
+     * @param index index of the group item.
+     * @param clickedItem name of clicked/group item.
+     * @param itemPositionFromGroup positon after which child item is to be added.
      */
-    private void addChildItems(int actualPosition, String clickedItem, int itemPositionFromGroup) {
-        String[] childItems = childItems().get(actualPosition);
+    private void addChildItems(int index, String clickedItem, int itemPositionFromGroup) {
+        String[] childItems = childItems().get(index);
         for (String item : childItems) {
             itemPositionFromGroup = itemPositionFromGroup + 1;
             mGroupNameItem.add(itemPositionFromGroup, new ParentChild(clickedItem, item));
@@ -211,8 +245,8 @@ public class MultiTypeAndCheckHelper {
     /**
      * This method is used to remove child item.
      *
-     * @param position position of group item
-     * @param itemPositionFromGroup the position of the parent Item
+     * @param position position of group item.
+     * @param itemPositionFromGroup positon after which child item is to be removed.
      */
     private void removeChildItems(int position, int itemPositionFromGroup) {
         String[] items = childItems().get(position);
@@ -226,9 +260,9 @@ public class MultiTypeAndCheckHelper {
     /**
      * This method is used to prepare map based on group item index.
      *
-     * @return HashMap
+     * @return Map
      */
-    private HashMap<Integer, String[]> childItems() {
+    private Map<Integer, String[]> childItems() {
         HashMap<Integer, String[]> map = new HashMap<>();
         map.put(0, new String[]{
                 ResUtil.getString(context, ResourceTable.String_item_child_Rock1),
@@ -258,9 +292,9 @@ public class MultiTypeAndCheckHelper {
     }
 
     /**
-     * This method is used to show toast dialog based on the given message.
+     * This method is used to show toast dialog based on the child Item.
      */
-    private void showToast() {
+    protected void showToast() {
         ToastDialog toastDialog = new ToastDialog(context);
         toastDialog.setAlignment(TextAlignment.BOTTOM);
         toastDialog.setText(ResUtil.getString(context, ResourceTable.String_clicked_on_child_item));
@@ -270,8 +304,8 @@ public class MultiTypeAndCheckHelper {
     /**
      * This method is used to prepare the background shape element based on color.
      *
-     * @param color color for the shape element
-     * @return ShapeElement
+     * @param color color for the shape element.
+     * @return ShapeElement.
      */
     private ShapeElement getShapeElement(int color) {
         ShapeElement shapeElement = new ShapeElement();
