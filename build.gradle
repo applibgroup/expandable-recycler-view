@@ -42,7 +42,7 @@ allprojects {
     }
     task checkstyle(type: Checkstyle) {
         showViolations = true
-        configFile file("huawei/config/checkstyle.xml")
+        configFile file("config/checkstyle.xml")
 
         source 'entry/src/main/java'
         source 'expandablerecyclerview/src/main/java'
