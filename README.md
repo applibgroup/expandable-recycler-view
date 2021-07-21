@@ -279,4 +279,4 @@ This will allow the us to select multiple Artist of a particulat Genre. It also 
 ![multicheck](https://user-images.githubusercontent.com/77639268/124965392-b5a54200-e03f-11eb-8676-7bd730c11796.gif)
 
 # License
-ExpandableRecyclerView is Copyright (c) 2016 thoughtbot, inc. It is free software, and may be redistributed under the terms specified in the [LICENSE](https://github.com/thoughtbot/expandable-recycler-view/blob/master/LICENSE) file.
+ExpandableRecyclerView is Copyright (c) 2016 thoughtbot, inc. It is free software, and may be redistributed under the terms specified in the [LICENSE](https://github.com/anshulgoel72/expandable-recycler-view-1/blob/anshul_branch/LICENSE) file.
