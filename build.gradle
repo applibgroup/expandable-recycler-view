@@ -38,7 +38,7 @@ allprojects {
         maven {
             url 'https://mirrors.huaweicloud.com/repository/maven/'
         }
-		jcenter()
+	jcenter()
     }
     task checkstyle(type: Checkstyle) {
         showViolations = true
