@@ -26,6 +26,13 @@ dependencies {
 	testImplementation 'junit:junit:4.13'
 }
 ```
+3. For using Diffre from a remote repository in separate application, add the below dependencies in entry/build.gradle file.
+``` java
+dependencies {
+	implementation 'dev.applibgroup:expandablerecyclerview:1.0.0'
+	testCompile 'junit:junit:4.13'
+}
+```
 
 # Usage
 Let's say you are a rock star 🎸 and you want to build an app to show a list of your favorite Genres with a list of their top Artists.
