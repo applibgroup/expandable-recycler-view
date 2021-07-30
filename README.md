@@ -26,7 +26,7 @@ dependencies {
 	testImplementation 'junit:junit:4.13'
 }
 ```
-3. For using Diffre from a remote repository in separate application, add the below dependencies in entry/build.gradle file.
+3. For using ExpandableRecyclerView from a remote repository in separate application, add the below dependencies in entry/build.gradle file.
 ``` java
 dependencies {
 	implementation 'dev.applibgroup:expandablerecyclerview:1.0.0'
